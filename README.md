@@ -2,6 +2,19 @@
 ================
 Compute the homogenization kernel between two PSFs using Wiener filtering
 
+#### Description
+
+Quick summary of the tasks performed by this code:
+
+  1. Replacing NaNs by zeros
+  2. Warping (rotation + resampling) of the PSFs (if necessary)
+  3. Filtering in Fourier space using a regularized Wiener filter (details [here](method.md))
+
+For simplicity, this code **does not** take care of:
+  - the _interpolation_ of NaN values
+  - the _centering_ of the PSF images
+  - the _minimization_ of the kernel size
+
 #### Usage
 
 ```bash
