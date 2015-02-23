@@ -1,5 +1,6 @@
 `make_psf_kernel`
 ================
+
 Compute the homogenization kernel between two PSFs using Wiener filtering
 
 #### Description
