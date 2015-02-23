@@ -41,6 +41,7 @@ make_psf_kernel <psf_input> <psf_target> <output>
 ```bash
 make_psf_kernel psf_a.fits psf_b.fits kernel_a_to_b.fits -r 1.e-5
 ```
+will create two files in the current directory: `kernel_a_to_b.fits` and `kernel_a_to_b_dft.fits`.
 
 #### Author
   Alexandre Boucaud <alexandre.boucaud@ias.u-psud.fr>
