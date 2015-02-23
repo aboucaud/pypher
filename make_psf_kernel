@@ -9,10 +9,8 @@ Compute the homogenization kernel between two PSFs
 
 Usage:
   make_psf_kernel <psf_input> <psf_target> <output>
-                  [-r, --reg_fact] [-f, --fourier]
-                  [--angle_input] [--angle_target]
-                  [-v, --verbose]
-                  [-h, --help]
+                  [--angle_input] [--angle_target] [-r, --reg_fact]
+                  [-v, --verbose] [-h, --help]
 
 Args:
   psf_input           path to the high resolution PSF (FITS image)
@@ -22,7 +20,6 @@ Args:
 Optionals:
   -h, --help          print help (this)
   -r, --reg_fact      regularization factor [default 1.e-4]
-  -f, --fourier       return the Fourier space version of the kernel
   --angle_input       rotation angle to apply to psf_input in deg
                       [default 0]
   --angle_target      rotation angle to apply to psf_target in deg
@@ -109,13 +106,6 @@ def parse_args():
         help="regularisation parameter for the Wiener filter")
 
     parser.add_argument(
-        '-f',
-        '--fourier',
-        action='store_true',
-        help="output the kernel in Fourier space rather than real space")
-
-
-    parser.add_argument(
         '-v',
         '--verbose',
         action='store_true',
@@ -167,7 +157,7 @@ def format_kernel_header(fits, args, pixel_scale):
             del hdr[comment_key]
     hdr.add_comment('='*50)
     hdr.add_comment('')
-    hdr.add_comment('File written with make_psf_kernel.py')
+    hdr.add_comment('File written with make_psf_kernel')
     hdr.add_comment('')
     hdr.add_comment('Kernel from PSF {} to {}'.format(os.path.basename(args.psf_input),
                                                               os.path.basename(args.psf_target)))
@@ -489,16 +479,17 @@ def main():
 
     # Write kernel to FITS file
     outfile = args.output
-    if args.fourier:
-        tkfits = pyfits.PrimaryHDU(data=tk_fourier)
-        outfile = outfile.replace(".fits", "_dft.fits")
-    else:
-        tkfits = pyfits.PrimaryHDU(data=tk)
+    tkfits = pyfits.PrimaryHDU(data=tk)
     format_kernel_header(tkfits, args, pixscale_target)
     tkfits.writeto(outfile)
+    # Write Fourier space kernel to FITS file
+    outfile_dft = outfile.replace(".fits", "_dft.fits")
+    tkfits_fourier = pyfits.PrimaryHDU(data=tk_fourier)
+    format_kernel_header(tkfits_fourier, args, pixscale_target)
+    tkfits_fourier.writeto(outfile_dft)
 
     if args.verbose and args.output:
-        printhelp("Output kernel saved in {}".format(outfile))
+        printhelp("Output kernels saved in {}".format(outfile))
 
 if __name__ == '__main__':
     try:

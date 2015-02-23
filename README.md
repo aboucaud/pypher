@@ -9,6 +9,7 @@ Quick summary of the tasks performed by this code:
   1. Replacing NaNs by zeros
   2. Warping (rotation + resampling) of the PSFs (if necessary)
   3. Filtering in Fourier space using a regularized Wiener filter (details [here](method.md))
+  4. Saving real space and Fourier space versions of the produced kernel
 
 For simplicity, this code **does not** take care of:
   - the _interpolation_ of NaN values
@@ -19,10 +20,8 @@ For simplicity, this code **does not** take care of:
 
 ```bash
 make_psf_kernel <psf_input> <psf_target> <output>
-                [-r, --reg_fact] [-f, --fourier]
-                [--angle_input] [--angle_target]
-                [-v, --verbose]
-                [-h, --help]
+                [--angle_input] [--angle_target] [-r, --reg_fact]
+                [-v, --verbose] [-h, --help]
 ```
 
 #### Args
@@ -33,7 +32,6 @@ make_psf_kernel <psf_input> <psf_target> <output>
 #### Optionals
 - `-h, --help`          print help (this)
 - `-r, --reg_fact`      regularization factor [default `1.e-4`]
-- `-f, --fourier`       return the Fourier space version of the kernel
 - `--angle_input`       rotation angle to apply to psf_input in deg [default `0`]
 - `--angle_target`      rotation angle to apply to psf_target in deg [default `0`]
 - `-v, --verbose`       print information while running the script
