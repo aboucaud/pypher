@@ -1,0 +1,508 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+===============
+make_psf_kernel
+===============
+Compute the homogenization kernel between two PSFs
+
+Usage:
+  make_psf_kernel <psf_input> <psf_target> <output>
+                  [-r, --reg_fact] [-f, --fourier]
+                  [--angle_input] [--angle_target]
+                  [-v, --verbose]
+                  [-h, --help]
+
+Args:
+  psf_input           path to the high resolution PSF (FITS image)
+  psf_target          path to the low resolution PSF (FITS image)
+  output              the output filename and path
+
+Optionals:
+  -h, --help          print help (this)
+  -r, --reg_fact      regularization factor [default 1.e-4]
+  -f, --fourier       return the Fourier space version of the kernel
+  --angle_input       rotation angle to apply to psf_input in deg
+                      [default 0]
+  --angle_target      rotation angle to apply to psf_target in deg
+                      [default 0]
+  -v, --verbose       print information while running the script
+
+Example:
+  make_psf_kernel psf_a.fits psf_b.fits kernel_a_to_b.fits -r 1.e-5
+
+Author:
+  Alexandre Boucaud <alexandre.boucaud@ias.u-psud.fr>
+
+Version:
+  0.3
+
+"""
+
+from __future__ import print_function, division
+
+import os
+import pyfits
+import numpy as np
+
+from scipy.ndimage import rotate, zoom
+
+printhelp = lambda *msg: print("make_psf_kernel:", *msg)
+
+def parse_args():
+    import argparse
+    # Starts with command line parsing
+    parser = argparse.ArgumentParser(
+        description="Compute the homogenization kernel between two PSFs")
+
+    parser.add_argument(
+        'psf_input',
+        nargs='?',
+        metavar='psf_input',
+        type=str,
+        help="the kernel with highest resolution")
+
+    parser.add_argument(
+        'psf_target',
+        nargs='?',
+        metavar='psf_target',
+        type=str,
+        help="the kernel with lowest resolution")
+
+    parser.add_argument(
+        'output',
+        nargs='?',
+        metavar='output',
+        type=str,
+        help="output file name")
+
+    parser.add_argument(
+        '--angle_input',
+        nargs='?',
+        metavar='angle_input',
+        type=float,
+        default=0.0,
+        const=0.0,
+        dest='angle_input',
+        help="rotation angle in degrees to apply to `psf_input`")
+
+    parser.add_argument(
+        '--angle_target',
+        nargs='?',
+        metavar='angle_target',
+        type=float,
+        default=0.0,
+        const=0.0,
+        dest='angle_target',
+        help="rotation angle in degrees to apply to `psf_target`")
+
+    parser.add_argument(
+        '-r',
+        '--reg_fact',
+        nargs='?',
+        metavar='reg_fact',
+        type=float,
+        default=1.e-4,
+        const=1.e-4,
+        dest='reg_fact',
+        help="regularisation parameter for the Wiener filter")
+
+    parser.add_argument(
+        '-f',
+        '--fourier',
+        action='store_true',
+        help="output the kernel in Fourier space rather than real space")
+
+
+    parser.add_argument(
+        '-v',
+        '--verbose',
+        action='store_true',
+        help="print information while running the script")
+
+    return parser.parse_args()
+
+################
+# IMAGE METHODS
+################
+
+def get_pixscale(filename):
+    """Retreive the image pixel scale in its FITS header"""
+    header = pyfits.getheader(filename)
+    pixel_key = ''
+    pkey_list = ['PIXSCALE', 'PIXSCALX', 'SECPIX',
+                 'CDELT1', 'CDELT2', 'CD1_1']
+    for key in pkey_list:
+        if key in header.keys():
+            pixel_key = key
+            break
+    if not pixel_key:
+        raise IOError("Pixel size not found in FITS file")
+
+    pixel_scale = header[pixel_key]
+    if pixel_key in ['CDELT1', 'CDELT2', 'CD1_1']:
+        pixel_scale *= 3600
+
+    return pixel_scale
+
+
+def format_kernel_header(fits, args, pixel_scale):
+    """
+    Format the output kernel header
+
+    Parameters
+    ----------
+    args: Argument Parser
+
+    Returns
+    -------
+    header: `pyfits.Header`
+        Output kernel formatted header
+
+    """
+    hdr = fits.header
+    for comment_key in ['COMMENT', 'comment', 'Comment']:
+        if comment_key in hdr.keys():
+            del hdr[comment_key]
+    hdr.add_comment('='*50)
+    hdr.add_comment('')
+    hdr.add_comment('File written with make_psf_kernel.py')
+    hdr.add_comment('')
+    hdr.add_comment('Kernel from PSF {} to {}'.format(os.path.basename(args.psf_input),
+                                                              os.path.basename(args.psf_target)))
+    hdr.add_comment('using a regularisation parameter R = {:1.1e}'.format(args.reg_fact))
+    hdr.add_comment('')
+    hdr.add_comment('='*50)
+
+    for psc_key in ['PIXSCALE', 'PIXSCALX', 'SECPIX',
+                    'CDELT1', 'CDELT2', 'CD1_1']:
+        if psc_key in hdr.keys():
+            del hdr[psc_key]
+    hdr['CD1_1'] = (pixel_scale, "pixel scale in deg.")
+    hdr['CD1_2'] = (0, "pixel scale in deg.")
+    hdr['CD2_1'] = (0, "pixel scale in deg.")
+    hdr['CD2_2'] = (pixel_scale, "pixel scale in deg.")
+
+
+def imrotate(image, angle, interp_order=1):
+    """Rotate an image from North to East given an angle in degrees
+
+    Parameters
+    ----------
+    image : `numpy.ndarray`
+        Input data array
+    angle : float
+        Angle in degrees
+    interp_order : int, optional
+        Spline interpolation order [0, 5] (default 1: linear)
+
+    Returns
+    -------
+    output : `numpy.ndarray`
+        Rotated data array
+
+    """
+    return rotate(image, -1.0 * angle,
+                  order=interp_order, reshape=False, prefilter=False)
+
+
+def imresample(image, input_pscale, target_pscale, interp_order=1):
+    """Resample data array from one pixel scale to another
+
+    Parameters
+    ----------
+    image : `numpy.ndarray`
+        Input data array
+    input_pscale : float
+        Pixel scale of ``image`` in arcseconds
+    target_pscale : float
+        Pixel scale of output array in arcseconds
+    interp_order : int, optional
+        Spline interpolation order [0, 5] (default 1: linear)
+
+    Returns
+    -------
+    output : `numpy.ndarray`
+        Resampled data array
+
+    """
+    old_size = image.shape[0]
+    new_size_raw = old_size * input_pscale / target_pscale
+    new_size = int(round(new_size_raw))
+    ratio = new_size / old_size
+    return zoom(image, ratio, order=interp_order) / ratio**2
+
+
+def trim(image, shape):
+    """Trim image to a given shape
+
+    Parameters
+    ----------
+    image: 2D `numpy.ndarray`
+        Input image
+    shape: tuple of int
+        Desired output shape of the image
+
+    Returns
+    -------
+    new_image: 2D `numpy.ndarray`
+        Input image trimmed
+
+    """
+    shape = np.asarray(shape, dtype=int)
+    imshape = np.asarray(image.shape, dtype=int)
+
+    if np.alltrue(imshape == shape):
+        return image
+
+    if np.any(shape <= 0):
+        raise ValueError("TRIM: null or negative shape given")
+
+    dshape = imshape - shape
+    if np.any(dshape < 0):
+        raise ValueError("TRIM: target size bigger than input one")
+
+    if np.any(dshape % 2 != 0):
+        raise ValueError("TRIM: input and target shapes have different parity.")
+
+    idx, idy = np.indices(shape)
+    offx, offy = dshape // 2
+
+    return image[idx + offx, idy + offy]
+
+
+def zero_pad(image, shape, position='corner'):
+    """
+    Extends image to a certain size with zeros
+
+    Parameters
+    ----------
+    image: real 2d `numpy.ndarray`
+        Input image
+    shape: tuple of int
+        Desired output shape of the image
+    position : str, optional
+        The position of the input image in the output one:
+            * 'corner'
+                top-left corner (default)
+            * 'center'
+                centered
+
+    Returns
+    -------
+    padded_img: real `numpy.ndarray`
+        The zero-padded image
+
+    """
+    shape = np.asarray(shape, dtype=int)
+    imshape = np.asarray(image.shape, dtype=int)
+
+    if np.alltrue(imshape == shape):
+        return image
+
+    if np.any(shape <= 0):
+        raise ValueError("ZERO_PAD: null or negative shape given")
+
+    dshape = shape - imshape
+    if np.any(dshape < 0):
+        raise ValueError("ZERO_PAD: target size smaller than input one")
+
+    pad_img = np.zeros(shape, dtype=image.dtype)
+
+    idx, idy = np.indices(imshape)
+
+    if position == 'center':
+        if np.any(dshape % 2 != 0):
+            raise ValueError("ZERO_PAD: input and target shapes "
+                             "have different parity.")
+        offx, offy = dshape // 2
+    else:
+        offx, offy = (0, 0)
+
+    pad_img[idx + offx, idy + offy] = image
+
+    return pad_img
+
+
+##########
+# FOURIER
+##########
+
+def udft2(image):
+    """Unitary fft2"""
+    norm = np.sqrt(image.size)
+    return np.fft.fft2(image) / norm
+
+
+def uidft2(image):
+    """Unitary ifft2"""
+    norm = np.sqrt(image.size)
+    return np.fft.ifft2(image) * norm
+
+
+def psf2otf(psf, shape):
+    """
+    Convert point-spread function to optical transfer function.
+
+    Compute the Fast Fourier Transform (FFT) of the point-spread
+    function (PSF) array and creates the optical transfer function (OTF)
+    array that is not influenced by the PSF off-centering.
+    By default, the OTF array is the same size as the PSF array.
+
+    To ensure that the OTF is not altered due to PSF off-centering, PSF2OTF
+    post-pads the PSF array (down or to the right) with zeros to match
+    dimensions specified in OUTSIZE, then circularly shifts the values of
+    the PSF array up (or to the left) until the central pixel reaches (1,1)
+    position.
+
+    Parameters
+    ----------
+    psf : `numpy.ndarray`
+        Input PSF array
+    shape : int
+        Output shape of the OTF array
+
+    Returns
+    -------
+    otf : `numpy.ndarray`
+        OTF array
+
+    Notes
+    -----
+    Adapted from MATLAB psf2otf function
+
+    """
+    if np.all(psf == 0):
+        otf = np.zeros_like(psf)
+    else:
+        inshape = psf.shape
+        # Pad the PSF to outsize
+        psf = zero_pad(psf, shape, position='corner')
+
+        # Circularly shift OTF so that the 'center' of the PSF is
+        # [0,0] element of the array
+        for axis, axis_size in enumerate(inshape):
+             psf = np.roll(psf, -int(axis_size/2), axis=axis)
+
+        # Compute the OTF
+        otf = np.fft.fft2(psf)
+
+        # Estimate the rough number of operations involved in the FFT
+        # and discard the PSF imaginary part if within roundoff error
+        # roundoff error  = machine epsilon = sys.float_info.epsilon or np.finfo().eps
+        n_ops = np.sum(psf.size * np.log2(psf.shape))
+        otf = np.real_if_close(otf, tol=n_ops)
+
+    return otf
+
+
+################
+# DECONVOLUTION
+################
+
+LAPLACIAN = np.array([[ 0, -1,  0],
+                      [-1,  4, -1],
+                      [ 0, -1,  0]])
+
+def deconv_wiener(input, target, reg_fact, clip=True):
+    """Deconvolution using a Wiener filter and high-freq penalization
+
+    The signal is penalized by a 2D Laplacian operator that serves as
+    a high-pass filter for the regularization process.
+
+    Parameters
+    ----------
+    image: `numpy.ndarray`
+        2D input array
+    psf: `numpy.ndarray`
+        2D kernel array
+    reg_fact: float
+        Regularisation parameter for the inversion method
+    clip: bool, optional
+        If `True`, enforces the non-amplification of the noise
+        (default `True`)
+
+    Returns
+    -------
+    deconv_image: `numpy.ndarray`
+        2D deconvolved image
+    deconv_fourier: `numpy.ndarray`
+        2D discrete Fourier transform of deconvolved image
+
+    """
+    # Optical transfer functions
+    # for the target image
+    trans_func = psf2otf(target, input.shape)
+    # for the regularization operator (high pass here)
+    reg_op = psf2otf(LAPLACIAN, input.shape)
+
+    # Wiener filter
+    wiener = np.conj(trans_func) / (np.abs(trans_func)**2 +
+                                    reg_fact * np.abs(reg)**2)
+
+    deconv_fourier = wiener_filter * udft2(input)
+    deconv_image = np.real(uidft2(kernel_fourier))
+
+    if clip:
+        deconv_image.clip(-1, 1)
+
+    return deconv_image, deconv_fourier
+
+
+#######
+# MAIN
+#######
+
+def main():
+    args = parse_args()
+
+    # Load images (NaNs are set to 0)
+    psf_input = pyfits.getdata(args.psf_input)
+    psf_target = pyfits.getdata(args.psf_target)
+
+    # Set NaNs to 0.0
+    psf_input = np.nan_to_num(psf_input)
+    psf_target = np.nan_to_num(psf_target)
+
+    # Retrieve the pixel scale of each image
+    pixscale_input = get_pixscale(args.psf_input)
+    pixscale_target = get_pixscale(args.psf_target)
+
+    # Rotate images (if necessary)
+    if args.angle_input != 0.0:
+        psf_input = imrotate(psf_input, args.angle_input)
+    if args.angle_target != 0.0:
+        psf_target = imrotate(psf_target, args.angle_target)
+
+    # Normalize the PSFs
+    psf_input /= psf_input.sum()
+    psf_target /= psf_target.sum()
+
+    # Resample high resolution image to the low one
+    if pixscale_input != pixscale_target:
+        psf_input = resample(psf_input, pixscale_input, pixscale_target)
+
+    psf_input = trim(psf_input, psf_target.shape)
+
+    tk, tk_fourier = deconv_wiener(psf_target, psf_input, args.reg_fact)
+
+    # Write kernel to FITS file
+    outfile = args.output
+    if args.fourier:
+        tkfits = pyfits.PrimaryHDU(data=tk_fourier)
+        outfile = outfile.replace(".fits", "_dft.fits")
+    else:
+        tkfits = pyfits.PrimaryHDU(data=tk)
+    format_kernel_header(tkfits, args, pixscale_target)
+    tkfits.writeto(outfile)
+
+    if args.verbose and args.output:
+        printhelp("Output kernel saved in {}".format(outfile))
+
+if __name__ == '__main__':
+    try:
+        main()
+    except:
+        print(__doc__)
+        raise
