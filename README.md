@@ -13,15 +13,15 @@ Quick summary of the tasks performed by this code:
   4. Saving real and Fourier space versions of the produced kernel.
 
 For simplicity, this code **does not** take care of:
-  - the _interpolation_ of NaN values
-  - the _centering_ of the PSF images
-  - the _minimization_ of the kernel size
+  - the _interpolation_ of NaN values,
+  - the _centering_ of the PSF images,
+  - the _minimization_ of the kernel size.
 
 #### Installation
 
 There are two ways to get this code running:
 
-  1. If you have `git` installed, the best way is to create a new directory and run the following command to retrieve the current version of the file
+  1. If you have `git` installed, the best way is to create a new directory and run the following command to retrieve the current version of the file,
     ```bash
     git clone git@git.ias.u-psud.fr:aboucaud/make_psf_kernel.git
     ```
@@ -54,10 +54,12 @@ make_psf_kernel <psf_input> <psf_target> <output>
 
 #### Example
 
+An example bash script is provided along with this code [`run_herschel_bash.sh`](run_herschel_bash.sh). Feel free to modify it to your needs.
+Otherwise a short example of a call to the code is
 ```bash
 make_psf_kernel psf_a.fits psf_b.fits kernel_a_to_b.fits -r 1.e-5
 ```
-will create two files in the current directory: `kernel_a_to_b.fits` and `kernel_a_to_b_dft.fits`.
+This will create two files in the current directory: `kernel_a_to_b.fits` and `kernel_a_to_b_dft.fits`.
 
 #### Author
   Alexandre Boucaud <alexandre.boucaud@ias.u-psud.fr>
