@@ -54,7 +54,7 @@ make_psf_kernel <psf_input> <psf_target> <output>
 
 #### Example
 
-An example bash script is provided along with this code [`run_herschel_bash.sh`](run_herschel_bash.sh). Feel free to modify it to your needs.
+An example bash script `run_herschel_bash.sh`, is provided along with this code (see [here](run_herschel_bash.sh)). Feel free to modify it to your needs.
 Otherwise a short example of a call to the code is
 ```bash
 make_psf_kernel psf_a.fits psf_b.fits kernel_a_to_b.fits -r 1.e-5
