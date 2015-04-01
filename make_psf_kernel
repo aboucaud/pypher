@@ -39,13 +39,14 @@ Version:
 
 from __future__ import print_function, division
 
-import os
 import pyfits
 import numpy as np
 
+from os import path
 from scipy.ndimage import rotate, zoom
 
 printhelp = lambda *msg: print("make_psf_kernel:", *msg)
+
 
 def parse_args():
     import argparse
@@ -117,6 +118,7 @@ def parse_args():
 # IMAGE METHODS
 ################
 
+
 def get_pixscale(filename):
     """Retreive the image pixel scale in its FITS header"""
     header = pyfits.getheader(filename)
@@ -159,9 +161,11 @@ def format_kernel_header(fits, args, pixel_scale):
     hdr.add_comment('')
     hdr.add_comment('File written with make_psf_kernel')
     hdr.add_comment('')
-    hdr.add_comment('Kernel from PSF {} to {}'.format(os.path.basename(args.psf_input),
-                                                              os.path.basename(args.psf_target)))
-    hdr.add_comment('using a regularisation parameter R = {:1.1e}'.format(args.reg_fact))
+    hdr.add_comment('Kernel from PSF '
+                    '{} to {}'.format(path.basename(args.psf_input),
+                                      path.basename(args.psf_target)))
+    hdr.add_comment('using a regularisation parameter '
+                    'R = {:1.1e}'.format(args.reg_fact))
     hdr.add_comment('')
     hdr.add_comment('='*50)
 
@@ -254,7 +258,7 @@ def trim(image, shape):
         raise ValueError("TRIM: target size bigger than input one")
 
     if np.any(dshape % 2 != 0):
-        raise ValueError("TRIM: input and target shapes have different parity.")
+        raise ValueError("TRIM: input and target shapes have different parity")
 
     idx, idy = np.indices(shape)
     offx, offy = dshape // 2
@@ -319,6 +323,7 @@ def zero_pad(image, shape, position='corner'):
 # FOURIER
 ##########
 
+
 def udft2(image):
     """Unitary fft2"""
     norm = np.sqrt(image.size)
@@ -373,14 +378,15 @@ def psf2otf(psf, shape):
         # Circularly shift OTF so that the 'center' of the PSF is
         # [0,0] element of the array
         for axis, axis_size in enumerate(inshape):
-             psf = np.roll(psf, -int(axis_size/2), axis=axis)
+            psf = np.roll(psf, -int(axis_size / 2), axis=axis)
 
         # Compute the OTF
         otf = np.fft.fft2(psf)
 
         # Estimate the rough number of operations involved in the FFT
         # and discard the PSF imaginary part if within roundoff error
-        # roundoff error  = machine epsilon = sys.float_info.epsilon or np.finfo().eps
+        # roundoff error  = machine epsilon = sys.float_info.epsilon
+        # or np.finfo().eps
         n_ops = np.sum(psf.size * np.log2(psf.shape))
         otf = np.real_if_close(otf, tol=n_ops)
 
@@ -394,6 +400,7 @@ def psf2otf(psf, shape):
 LAPLACIAN = np.array([[ 0, -1,  0],
                       [-1,  4, -1],
                       [ 0, -1,  0]])
+
 
 def deconv_wiener(input, target, reg_fact, clip=True):
     """Deconvolution using a Wiener filter and high-freq penalization
@@ -444,6 +451,7 @@ def deconv_wiener(input, target, reg_fact, clip=True):
 # MAIN
 #######
 
+
 def main():
     args = parse_args()
 
@@ -483,13 +491,15 @@ def main():
     format_kernel_header(tkfits, args, pixscale_target)
     tkfits.writeto(outfile)
     # Write Fourier space kernel to FITS file
-    outfile_dft = outfile.replace(".fits", "_dft.fits")
+    outbase, outext = path.splitext(outfile)
+    outfile_dft = path.join(outbase, "_dft", outext)
     tkfits_fourier = pyfits.PrimaryHDU(data=tk_fourier)
     format_kernel_header(tkfits_fourier, args, pixscale_target)
     tkfits_fourier.writeto(outfile_dft)
 
     if args.verbose and args.output:
         printhelp("Output kernels saved in {}".format(outfile))
+
 
 if __name__ == '__main__':
     try:
