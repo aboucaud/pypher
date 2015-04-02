@@ -39,9 +39,11 @@ Version:
 
 from __future__ import print_function, division
 
-import pyfits
 import numpy as np
-
+try:
+    import astropy.io.fits as pyfits
+except ImportError:
+    import pyfits
 from os import path
 from scipy.ndimage import rotate, zoom
 
