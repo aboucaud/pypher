@@ -440,8 +440,8 @@ def deconv_wiener(input, target, reg_fact, clip=True):
     wiener = np.conj(trans_func) / (np.abs(trans_func)**2 +
                                     reg_fact * np.abs(reg_op)**2)
 
-    deconv_fourier = wiener_filter * udft2(input)
-    deconv_image = np.real(uidft2(kernel_fourier))
+    deconv_fourier = wiener * udft2(input)
+    deconv_image = np.real(uidft2(deconv_fourier))
 
     if clip:
         deconv_image.clip(-1, 1)
