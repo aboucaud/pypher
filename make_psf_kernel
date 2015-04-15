@@ -493,11 +493,13 @@ def main():
     format_kernel_header(tkfits, args, pixscale_target)
     tkfits.writeto(outfile)
     # Write Fourier space kernel to FITS file
-    outbase, outext = path.splitext(outfile)
-    outfile_dft = path.join(outbase, "_dft", outext)
-    tkfits_fourier = pyfits.PrimaryHDU(data=tk_fourier)
-    format_kernel_header(tkfits_fourier, args, pixscale_target)
-    tkfits_fourier.writeto(outfile_dft)
+    print("Currently the code does not save the Fourier transform "
+          "in a FITS file")
+    # outbase, outext = path.splitext(outfile)
+    # outfile_dft = path.join(outbase, "_dft", outext)
+    # tkfits_fourier = pyfits.PrimaryHDU(data=tk_fourier)
+    # format_kernel_header(tkfits_fourier, args, pixscale_target)
+    # tkfits_fourier.writeto(outfile_dft)
 
     if args.verbose and args.output:
         printhelp("Output kernels saved in {}".format(outfile))
