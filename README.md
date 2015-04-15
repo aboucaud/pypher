@@ -28,7 +28,7 @@ There are two ways to get this code running:
 
   2. Otherwise you will find on top of the [main page](https://git.ias.u-psud.fr/aboucaud/make_psf_kernel) a download button to get a compressed archive containing the code.
 
-To be able to run `make_psf_kernel`, you will need the following Python libraries installed: **numpy**, **scipy** and **pyfits**. If you have trouble installing these libraries, either contact the server administrator, or refer to [these instructions](https://git.ias.u-psud.fr/abeelen/python-notebook/blob/master/PythonInstall.md) for your personal computer.
+To be able to run `make_psf_kernel`, you will need the following Python libraries installed: **numpy**, **scipy** and **pyfits (>= 3.3)**. If you have trouble installing these libraries, either contact the server administrator, or refer to [these instructions](https://git.ias.u-psud.fr/abeelen/python-notebook/blob/master/PythonInstall.md) for your personal computer.
 
 Last, in order to run this code in any directory, you should add its location to your `PATH`.
 
