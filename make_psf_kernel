@@ -33,7 +33,7 @@ Author:
   Alexandre Boucaud <alexandre.boucaud@ias.u-psud.fr>
 
 Version:
-  0.3
+  0.3.3
 
 """
 
@@ -483,7 +483,12 @@ def main():
     if pixscale_input != pixscale_target:
         psf_input = resample(psf_input, pixscale_input, pixscale_target)
 
-    psf_input = trim(psf_input, psf_target.shape)
+    # check the new size of the input vs. the target
+    if ((psf_input.shape[0] > psf_target.shape[0]) or
+        (psf_input.shape[1] > psf_target.shape[1])):
+        psf_input = trim(psf_input, psf_target.shape)
+    else:
+        psf_input = zero_pad(psf_input, psf_target.shape, position='center')
 
     tk, tk_fourier = deconv_wiener(psf_target, psf_input, args.reg_fact)
 
