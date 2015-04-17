@@ -481,7 +481,7 @@ def main():
 
     # Resample high resolution image to the low one
     if pixscale_input != pixscale_target:
-        psf_input = resample(psf_input, pixscale_input, pixscale_target)
+        psf_input = imresample(psf_input, pixscale_input, pixscale_target)
 
     # check the new size of the input vs. the target
     if ((psf_input.shape[0] > psf_target.shape[0]) or
