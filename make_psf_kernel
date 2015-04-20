@@ -134,7 +134,7 @@ def get_pixscale(filename):
     if not pixel_key:
         raise IOError("Pixel size not found in FITS file")
 
-    pixel_scale = header[pixel_key]
+    pixel_scale = abs(header[pixel_key])
     if pixel_key in ['CDELT1', 'CDELT2', 'CD1_1']:
         pixel_scale *= 3600
 
