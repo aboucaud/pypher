@@ -33,19 +33,22 @@ Author:
   Alexandre Boucaud <alexandre.boucaud@ias.u-psud.fr>
 
 Version:
-  0.3.3
+  0.4
 
 """
 
 from __future__ import print_function, division
 
+import os
 import numpy as np
+import logging
 try:
     import astropy.io.fits as pyfits
 except ImportError:
     import pyfits
 from os import path
 from scipy.ndimage import rotate, zoom
+from logging.handlers import RotatingFileHandler
 
 printhelp = lambda *msg: print("make_psf_kernel:", *msg)
 
@@ -448,6 +451,29 @@ def deconv_wiener(input, target, reg_fact, clip=True):
 
     return deconv_image, deconv_fourier
 
+########
+# DEBUG
+########
+
+
+def setup_logger(log_filename='make_psf_kernel.log'):
+    """Sets up a logger"""
+    # create logger
+    logger = logging.getLogger('logger')
+    logger.setLevel(logging.DEBUG)
+    # Add the log message handler to the logger
+    handler = RotatingFileHandler(log_filename)
+    # create formatter
+    formatter = logging.Formatter('%(asctime)s - '
+                                  '%(module)s - '
+                                  '%(levelname)s - '
+                                  '%(message)s')
+    handler.setFormatter(formatter)
+    # add handler to logger
+    logger.addHandler(handler)
+
+    return logger
+
 
 #######
 # MAIN
@@ -457,9 +483,17 @@ def deconv_wiener(input, target, reg_fact, clip=True):
 def main():
     args = parse_args()
 
+    logname = 'make_psf_kernel.log'
+    if os.path.exists(logname):
+        os.remove(logname)
+    log = setup_logger(logname)
+
     # Load images (NaNs are set to 0)
     psf_input = pyfits.getdata(args.psf_input)
     psf_target = pyfits.getdata(args.psf_target)
+
+    log.info('Input PSF loaded:  %s' % args.psf_input)
+    log.info('Target PSF loaded: %s' % args.psf_target)
 
     # Set NaNs to 0.0
     psf_input = np.nan_to_num(psf_input)
@@ -469,11 +503,17 @@ def main():
     pixscale_input = get_pixscale(args.psf_input)
     pixscale_target = get_pixscale(args.psf_target)
 
+    log.info('Input PSF pixel scale:  %.2f arcsec' % pixscale_input)
+    log.info('Target PSF pixel scale: %.2f arcsec' % pixscale_target)
+
     # Rotate images (if necessary)
     if args.angle_input != 0.0:
         psf_input = imrotate(psf_input, args.angle_input)
     if args.angle_target != 0.0:
         psf_target = imrotate(psf_target, args.angle_target)
+
+    log.info('Input PSF rotated by  %.2f degrees' % args.angle_input)
+    log.info('Target PSF rotated by %.2f degrees' % args.angle_target)
 
     # Normalize the PSFs
     psf_input /= psf_input.sum()
@@ -483,6 +523,8 @@ def main():
     if pixscale_input != pixscale_target:
         psf_input = imresample(psf_input, pixscale_input, pixscale_target)
 
+        log.info('Input PSF resampled to the target pixel scale')
+
     # check the new size of the input vs. the target
     if ((psf_input.shape[0] > psf_target.shape[0]) or
         (psf_input.shape[1] > psf_target.shape[1])):
@@ -491,6 +533,9 @@ def main():
         psf_input = zero_pad(psf_input, psf_target.shape, position='center')
 
     tk, tk_fourier = deconv_wiener(psf_target, psf_input, args.reg_fact)
+
+    log.info('Kernel computed using wiener filtering and a regularisation '
+             'parameter r = %.2e' % args.reg_fact)
 
     # Write kernel to FITS file
     outfile = args.output
@@ -505,6 +550,8 @@ def main():
     # tkfits_fourier = pyfits.PrimaryHDU(data=tk_fourier)
     # format_kernel_header(tkfits_fourier, args, pixscale_target)
     # tkfits_fourier.writeto(outfile_dft)
+
+    log.info('Kernel saved in %s' % outfile)
 
     if args.verbose and args.output:
         printhelp("Output kernels saved in {}".format(outfile))
