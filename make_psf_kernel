@@ -40,6 +40,7 @@ Version:
 from __future__ import print_function, division
 
 import os
+import sys
 import numpy as np
 import logging
 try:
@@ -230,6 +231,9 @@ def imresample(image, input_pscale, target_pscale, interp_order=1):
     new_size_raw = old_size * input_pscale / target_pscale
     new_size = int(round(new_size_raw))
     ratio = new_size / old_size
+    if new_size > 10000:
+        raise MemoryError()
+
     return zoom(image, ratio, order=interp_order) / ratio**2
 
 
@@ -521,7 +525,16 @@ def main():
 
     # Resample high resolution image to the low one
     if pixscale_input != pixscale_target:
-        psf_input = imresample(psf_input, pixscale_input, pixscale_target)
+        try:
+            psf_input = imresample(psf_input, pixscale_input, pixscale_target)
+        except MemoryError:
+            log.error('- COMPUTATION ABORTED -')
+            log.error('The size of the resampled PSF would have '
+                      'exceeded 10K x 10K')
+            log.error('Please resize your image and try again')
+
+            print('Issue during the resampling step - see make_psf_kernel.log')
+            sys.exit()
 
         log.info('Input PSF resampled to the target pixel scale')
 
