@@ -10,7 +10,8 @@ Quick summary of the tasks performed by this code:
   1. Replacing NaNs by zeros,
   2. Warping (rotation + resampling) of the PSFs (if necessary),
   3. Filtering in Fourier space using a regularized Wiener filter (details [here](method.md)),
-  4. Saving real and Fourier space versions of the produced kernel.
+  <!-- 4. Saving real and Fourier space versions of the produced kernel. -->
+  4. Saving real space version of the produced kernel.
 
 For simplicity, this code **does not** take care of:
   - the _interpolation_ of NaN values,
@@ -59,10 +60,11 @@ Otherwise a short example of a call to the code is
 ```bash
 make_psf_kernel psf_a.fits psf_b.fits kernel_a_to_b.fits -r 1.e-5
 ```
-This will create two files in the current directory: `kernel_a_to_b.fits` and `kernel_a_to_b_dft.fits`.
+<!-- This will create two files in the current directory: `kernel_a_to_b.fits` and `kernel_a_to_b_dft.fits`. -->
+This will create two files in the current directory: `kernel_a_to_b.fits` and `make_psf_kernel.log` where every useful information about the processing is stored.
 
 #### Author
   Alexandre Boucaud <alexandre.boucaud@ias.u-psud.fr>
 
 #### Version
-  0.3
+  0.4
