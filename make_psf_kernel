@@ -411,7 +411,7 @@ LAPLACIAN = np.array([[ 0, -1,  0],
                       [ 0, -1,  0]])
 
 
-def deconv_wiener(input, target, reg_fact, clip=True):
+def deconv_wiener(source, target, reg_fact, clip=True):
     """Deconvolution using a Wiener filter and high-freq penalization
 
     The signal is penalized by a 2D Laplacian operator that serves as
@@ -419,10 +419,10 @@ def deconv_wiener(input, target, reg_fact, clip=True):
 
     Parameters
     ----------
-    image: `numpy.ndarray`
-        2D input array
-    psf: `numpy.ndarray`
-        2D kernel array
+    source: `numpy.ndarray`
+        2D source PSF image
+    target: `numpy.ndarray`
+        2D target PSF image
     reg_fact: float
         Regularisation parameter for the inversion method
     clip: bool, optional
@@ -431,29 +431,28 @@ def deconv_wiener(input, target, reg_fact, clip=True):
 
     Returns
     -------
-    deconv_image: `numpy.ndarray`
+    kernel_real: `numpy.ndarray`
         2D deconvolved image
-    deconv_fourier: `numpy.ndarray`
+    kernel_fourier: `numpy.ndarray`
         2D discrete Fourier transform of deconvolved image
 
     """
-    # Optical transfer functions
-    # for the target image
-    trans_func = psf2otf(target, input.shape)
+    # Optical transfer function for the source PSF
+    trans_func = psf2otf(source, target.shape)
     # for the regularization operator (high pass here)
-    reg_op = psf2otf(LAPLACIAN, input.shape)
+    reg_op = psf2otf(LAPLACIAN, target.shape)
 
     # Wiener filter
     wiener = np.conj(trans_func) / (np.abs(trans_func)**2 +
                                     reg_fact * np.abs(reg_op)**2)
 
-    deconv_fourier = wiener * udft2(input)
-    deconv_image = np.real(uidft2(deconv_fourier))
+    kernel_fourier = wiener * udft2(target)
+    kernel_real = np.real(uidft2(kernel_fourier))
 
     if clip:
-        deconv_image.clip(-1, 1)
+        kernel_real.clip(-1, 1)
 
-    return deconv_image, deconv_fourier
+    return kernel_real, kernel_fourier
 
 ########
 # DEBUG
