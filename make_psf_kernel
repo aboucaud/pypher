@@ -42,6 +42,7 @@ from __future__ import print_function, division
 import os
 import sys
 import numpy as np
+import numpy.random as npr
 import logging
 try:
     import astropy.io.fits as pyfits
@@ -453,6 +454,129 @@ def deconv_wiener(source, target, reg_fact, clip=True):
         kernel_real.clip(-1, 1)
 
     return kernel_real, kernel_fourier
+
+
+def deconv_unsup_wiener(data, source, clip=True, user_settings=None):
+    """Return an estimation of the regularisation parameter
+
+    Return an estimation of the regularisation parameter by
+    unsupervised Wiener-Hunt deconvolution, see References.
+
+    Parameters
+    ----------
+    data: `numpy.ndarray`
+        2D image of data to process
+    source: `numpy.ndarray`
+        2D source PSF image
+    clip: bool, optional
+        If `True`, enforces the non-amplification of the noise
+        (default `True`)
+    user_settings: dict, optional
+        settings of the algorithm, see source.
+
+    Returns
+    -------
+    reg_val: float
+        an estimation of  the regularisation parameter need for the data set.
+    extra: dict
+        additionnal products of the algorithm, see source.
+
+    References
+    ----------
+    .. [1] François Orieux, Jean-François Giovannelli, and Thomas
+           Rodet, "Bayesian estimation of regularization and point
+           spread function parameters for Wiener-Hunt deconvolution",
+           J. Opt. Soc. Am. A 27, 1593-1607 (2010)
+
+    http://www.opticsinfobase.org/josaa/abstract.cfm?URI=josaa-27-7-1593
+    """
+    settings = {'threshold': 1e-4, 'max_iter': 200,
+                'min_iter': 100, 'burnin': 30}
+    settings = settings.update(user_settings) if user_settings else settings
+
+    # Optical transfer function for the source PSF
+    trans_func = psf2otf(source, source.shape)
+    # for the regularization operator (high pass here)
+    reg_op = psf2otf(LAPLACIAN, source.shape)
+
+    # The mean of the object
+    x_postmean = np.zeros(trans_func.shape)
+    # The previous computed mean in the iterative loop
+    prev_x_postmean = np.zeros(trans_func.shape)
+
+    # Difference between two successive mean
+    delta = np.NAN
+
+    # Initial state of the chain
+    gn_chain, gx_chain = [1], [1]
+
+    # The correlation of the object in Fourier space (if size is big,
+    # this can reduce computation time in the loop)
+    areg2 = np.abs(reg_op)**2
+    atf2 = np.abs(trans_func)**2
+
+    data_size = data.size
+    data = udft2(data)
+
+    # Gibbs sampling
+    for iteration in range(settings['max_iter']):
+        # Sample of Eq. 27 p(circX^k | gn^k-1, gx^k-1, y).
+
+        # weighing (correlation in direct space)
+        precision = gn_chain[-1] * atf2 + gx_chain[-1] * areg2  # Eq. 29
+        excursion = npr.standart_normal(data.shape) / np.sqrt(precision)
+
+        # mean Eq. 30 (RLS for fixed gn, gamma0 and gamma1 ...)
+        wiener_filter = gn_chain[-1] * np.conj(trans_func) / precision
+        x_mean = wiener_filter * data
+
+        # sample of X in Fourier space
+        x_sample = x_mean + excursion
+
+        # sample of Eq. 31 p(gn | x^k, gx^k, y)
+        likelihood = np.sum(np.abs(data - x_sample * trans_func)**2)
+        gn_chain.append(npr.gamma(data_size / 2, 2 / likelihood))
+
+        # sample of Eq. 31 p(gx | x^k, gn^k-1, y)
+        smoothness = np.sum(np.abs(x_sample * reg_op)**2)
+        gx_chain.append(npr.gamma((data_size - 1) / 2, 2 / smoothness))
+
+        # current empirical average
+        if iteration > settings['burnin']:
+            x_postmean = prev_x_postmean + x_sample
+
+        if iteration > (settings['burnin'] + 1):
+            norm = np.sum(np.abs(x_postmean)) / (iteration -
+                                                 settings['burnin'])
+            current = x_postmean / (iteration - settings['burnin'])
+            previous = prev_x_postmean / (iteration - settings['burnin'] - 1)
+
+            delta = np.sum(np.abs(current - previous)) / norm
+
+        prev_x_postmean = x_postmean
+
+        # stop of the algorithm
+        if (iteration > settings['min_iter']) and \
+           (delta < settings['threshold']):
+            break
+
+    # Empirical average \approx POSTMEAN Eq. 44
+    x_postmean = x_postmean / (iteration - settings['burnin'])
+    x_postmean = np.real(uidft2(x_postmean))
+
+    if clip:
+        x_postmean.clip(-1, 1)
+
+    return (np.mean(gx_chain[settings['burnin']:]) /
+            np.mean(gn_chain[settings['burnin']:]),
+            {'image': x_postmean,
+             'noise': np.mean(gn_chain[settings['burnin']:]),
+             'prior': np.mean(gn_chain[settings['burnin']:]),
+             'noise_uncertainty': np.std(gn_chain[settings['burnin']:]),
+             'prior_uncertainty': np.std(gn_chain[settings['burnin']:]),
+             'regul_uncertainty': np.std(gn_chain[settings['burnin']:]) /
+             np.std(gn_chain[settings['burnin']:])})
+
 
 ########
 # DEBUG
