@@ -10,7 +10,6 @@ Quick summary of the tasks performed by this code:
   1. Replacing NaNs by zeros,
   2. Warping (rotation + resampling) of the PSFs (if necessary),
   3. Filtering in Fourier space using a regularized Wiener filter (details [here](method.md)),
-  <!-- 4. Saving real and Fourier space versions of the produced kernel. -->
   4. Saving real space version of the produced kernel.
 
 For simplicity, this code **does not** take care of:
@@ -29,7 +28,7 @@ There are two ways to get this code running:
 
   2. Otherwise you will find on top of the [main page](https://git.ias.u-psud.fr/aboucaud/make_psf_kernel) a download button to get a compressed archive containing the code.
 
-To be able to run `make_psf_kernel`, you will need the following Python libraries installed: **numpy**, **scipy** and **pyfits (>= 3.3)**. If you have trouble installing these libraries, either contact the server administrator, or refer to [these instructions](https://git.ias.u-psud.fr/abeelen/python-notebook/blob/master/PythonInstall.md) for your personal computer.
+To be able to run `make_psf_kernel`, you will need the following Python libraries installed: **numpy**, **scipy** and **pyfits (>= 3.3)** or **astropy (>=1.0)**. If you have trouble installing these libraries, either contact the server administrator, or refer to [these instructions](https://git.ias.u-psud.fr/abeelen/python-notebook/blob/master/PythonInstall.md) for your personal computer.
 
 Last, in order to run this code in any directory, you should add its location to your `PATH`.
 
@@ -38,7 +37,7 @@ Last, in order to run this code in any directory, you should add its location to
 ```bash
 make_psf_kernel <psf_input> <psf_target> <output>
                 [--angle_input] [--angle_target] [-r, --reg_fact]
-                [-v, --verbose] [-h, --help]
+                [-h, --help]
 ```
 
 ##### Args
@@ -51,7 +50,6 @@ make_psf_kernel <psf_input> <psf_target> <output>
 - `-r, --reg_fact`      regularization factor [default `1.e-4`]
 - `--angle_input`       rotation angle to apply to psf_input in deg [default `0`]
 - `--angle_target`      rotation angle to apply to psf_target in deg [default `0`]
-- `-v, --verbose`       print information while running the script
 
 #### Example
 
@@ -67,4 +65,4 @@ This will create two files in the current directory: `kernel_a_to_b.fits` and `m
   Alexandre Boucaud <alexandre.boucaud@ias.u-psud.fr>
 
 #### Version
-  0.4
+  0.5
