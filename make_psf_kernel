@@ -10,7 +10,7 @@ Compute the homogenization kernel between two PSFs
 Usage:
   make_psf_kernel <psf_input> <psf_target> <output>
                   [--angle_input] [--angle_target] [-r, --reg_fact]
-                  [-v, --verbose] [-h, --help]
+                  [-h, --help]
 
 Args:
   psf_input           path to the high resolution PSF (FITS image)
@@ -24,7 +24,6 @@ Optionals:
                       [default 0]
   --angle_target      rotation angle to apply to psf_target in deg
                       [default 0]
-  -v, --verbose       print information while running the script
 
 Example:
   make_psf_kernel psf_a.fits psf_b.fits kernel_a_to_b.fits -r 1.e-5
@@ -33,7 +32,7 @@ Author:
   Alexandre Boucaud <alexandre.boucaud@ias.u-psud.fr>
 
 Version:
-  0.4
+  0.5
 
 """
 
@@ -51,8 +50,6 @@ except ImportError:
 from os import path
 from scipy.ndimage import rotate, zoom
 from logging.handlers import RotatingFileHandler
-
-printhelp = lambda *msg: print("make_psf_kernel:", *msg)
 
 
 def parse_args():
@@ -113,12 +110,6 @@ def parse_args():
         dest='reg_fact',
         help="regularisation parameter for the Wiener filter")
 
-    parser.add_argument(
-        '-v',
-        '--verbose',
-        action='store_true',
-        help="print information while running the script")
-
     return parser.parse_args()
 
 ################
@@ -168,9 +159,10 @@ def format_kernel_header(fits, args, pixel_scale):
     hdr.add_comment('')
     hdr.add_comment('File written with make_psf_kernel')
     hdr.add_comment('')
-    hdr.add_comment('Kernel from PSF '
-                    '{} to {}'.format(path.basename(args.psf_input),
-                                      path.basename(args.psf_target)))
+    hdr.add_comment('Kernel from PSF')
+    hdr.add_comment('=> {}'.format(path.basename(args.psf_input)))
+    hdr.add_comment('to PSF')
+    hdr.add_comment('=> {}'.format(path.basename(args.psf_target)))
     hdr.add_comment('using a regularisation parameter '
                     'R = {:1.1e}'.format(args.reg_fact))
     hdr.add_comment('')
@@ -412,7 +404,7 @@ LAPLACIAN = np.array([[ 0, -1,  0],
                       [ 0, -1,  0]])
 
 
-def deconv_wiener(source, target, reg_fact, clip=True):
+def deconv_wiener(input, target, reg_fact, clip=True):
     """Deconvolution using a Wiener filter and high-freq penalization
 
     The signal is penalized by a 2D Laplacian operator that serves as
@@ -420,10 +412,10 @@ def deconv_wiener(source, target, reg_fact, clip=True):
 
     Parameters
     ----------
-    source: `numpy.ndarray`
-        2D source PSF image
-    target: `numpy.ndarray`
-        2D target PSF image
+    image: `numpy.ndarray`
+        2D input array
+    psf: `numpy.ndarray`
+        2D kernel array
     reg_fact: float
         Regularisation parameter for the inversion method
     clip: bool, optional
@@ -432,28 +424,29 @@ def deconv_wiener(source, target, reg_fact, clip=True):
 
     Returns
     -------
-    kernel_real: `numpy.ndarray`
+    deconv_image: `numpy.ndarray`
         2D deconvolved image
-    kernel_fourier: `numpy.ndarray`
+    deconv_fourier: `numpy.ndarray`
         2D discrete Fourier transform of deconvolved image
 
     """
-    # Optical transfer function for the source PSF
-    trans_func = psf2otf(source, target.shape)
+    # Optical transfer functions
+    # for the target image
+    trans_func = psf2otf(target, input.shape)
     # for the regularization operator (high pass here)
-    reg_op = psf2otf(LAPLACIAN, target.shape)
+    reg_op = psf2otf(LAPLACIAN, input.shape)
 
     # Wiener filter
     wiener = np.conj(trans_func) / (np.abs(trans_func)**2 +
                                     reg_fact * np.abs(reg_op)**2)
 
-    kernel_fourier = wiener * udft2(target)
-    kernel_real = np.real(uidft2(kernel_fourier))
+    deconv_fourier = wiener * udft2(input)
+    deconv_image = np.real(uidft2(deconv_fourier))
 
     if clip:
-        kernel_real.clip(-1, 1)
+        deconv_image.clip(-1, 1)
 
-    return kernel_real, kernel_fourier
+    return deconv_image, deconv_fourier
 
 
 def deconv_unsup_wiener(data, source, clip=True, user_settings=None):
@@ -689,8 +682,7 @@ def main():
 
     log.info('Kernel saved in %s' % outfile)
 
-    if args.verbose and args.output:
-        printhelp("Output kernels saved in {}".format(outfile))
+    print("make_psf_kernel: Output kernels saved in {}".format(outfile))
 
 
 if __name__ == '__main__':
