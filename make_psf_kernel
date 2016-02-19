@@ -517,7 +517,7 @@ def deconv_unsup_wiener(data, source, clip=True, user_settings=None):
 
         # weighing (correlation in direct space)
         precision = gn_chain[-1] * atf2 + gx_chain[-1] * areg2  # Eq. 29
-        excursion = npr.standart_normal(data.shape) / np.sqrt(precision)
+        excursion = npr.standard_normal(data.shape) / np.sqrt(precision)
 
         # mean Eq. 30 (RLS for fixed gn, gamma0 and gamma1 ...)
         wiener_filter = gn_chain[-1] * np.conj(trans_func) / precision
