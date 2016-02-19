@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# Copyright (c) 2015 IAS / CNRS / Univ. Paris-Sud
+# New BSD License
+# Author: Alexandre Boucaud <alexandre.boucaud@ias.u-psud.fr>
+
 """
 ===============
 make_psf_kernel
@@ -35,7 +39,6 @@ Version:
   0.5
 
 """
-
 from __future__ import print_function, division
 
 import os
@@ -50,6 +53,8 @@ except ImportError:
 from os import path
 from scipy.ndimage import rotate, zoom
 from logging.handlers import RotatingFileHandler
+
+__version__ = '0.5'
 
 
 def parse_args():

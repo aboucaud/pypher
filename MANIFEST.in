@@ -1,0 +1,7 @@
+include README.md
+include LICENSE
+exclude *.sh
+exclude .gitignore
+
+global-exclude *.pyc
+global-exclude *.DS_Store
