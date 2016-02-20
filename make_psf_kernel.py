@@ -409,49 +409,76 @@ LAPLACIAN = np.array([[ 0, -1,  0],
                       [ 0, -1,  0]])
 
 
-def deconv_wiener(input, target, reg_fact, clip=True):
-    """Deconvolution using a Wiener filter and high-freq penalization
+def deconv_wiener(psf, reg_fact):
+    """Create a Wiener filter using a PSF image
 
-    The signal is penalized by a 2D Laplacian operator that serves as
-    a high-pass filter for the regularization process.
+    The signal is $\ell_2$ penalized by a 2D Laplacian operator that
+    serves as a high-pass filter for the regularization process.
+    The key to the process is to use optical transfer functions (OTF)
+    instead of simple Fourier transform, since it ensures the phase
+    of the psf is adequately placed.
 
     Parameters
     ----------
-    image: `numpy.ndarray`
-        2D input array
     psf: `numpy.ndarray`
-        2D kernel array
+        2D array
     reg_fact: float
-        Regularisation parameter for the inversion method
+        Regularisation parameter for the Wiener filter
+
+    Returns
+    -------
+    wiener: complex `numpy.ndarray`
+        Fourier space Wiener filter
+
+    """
+    # Optical transfer functions
+    trans_func = psf2otf(psf, psf.shape)
+    reg_op = psf2otf(LAPLACIAN, psf.shape)
+
+    wiener = np.conj(trans_func) / (np.abs(trans_func)**2 +
+                                    reg_fact * np.abs(reg_op)**2)
+
+    return wiener
+
+
+def homogenization_kernel(psf_target, psf_source, reg_fact=1e-4, clip=True):
+    """
+    Compute the homogenization kernel to match two PSFs
+
+    The deconvolution step is done using a Wiener filter with $\ell_2$
+    penalization.
+    The output is given both in Fourier and in the image domain to serve
+    different purposes.
+
+    Parameters
+    ----------
+    psf_target: `numpy.ndarray`
+        2D array
+    psf_source: `numpy.ndarray`
+        2D array
+    reg_fact: float, optional
+        Regularisation parameter for the Wiener filter
     clip: bool, optional
         If `True`, enforces the non-amplification of the noise
         (default `True`)
 
     Returns
     -------
-    deconv_image: `numpy.ndarray`
+    kernel_image: `numpy.ndarray`
         2D deconvolved image
-    deconv_fourier: `numpy.ndarray`
+    kernel_fourier: `numpy.ndarray`
         2D discrete Fourier transform of deconvolved image
 
     """
-    # Optical transfer functions
-    # for the target image
-    trans_func = psf2otf(target, input.shape)
-    # for the regularization operator (high pass here)
-    reg_op = psf2otf(LAPLACIAN, input.shape)
+    wiener = deconv_wiener(psf_source, reg_fact)
 
-    # Wiener filter
-    wiener = np.conj(trans_func) / (np.abs(trans_func)**2 +
-                                    reg_fact * np.abs(reg_op)**2)
-
-    deconv_fourier = wiener * udft2(input)
-    deconv_image = np.real(uidft2(deconv_fourier))
+    kernel_fourier = wiener * udft2(psf_target)
+    kernel_image = np.real(uidft2(kernel_fourier))
 
     if clip:
-        deconv_image.clip(-1, 1)
+        kernel_image.clip(-1, 1)
 
-    return deconv_image, deconv_fourier
+    return kernel_image, kernel_fourier
 
 
 def deconv_unsup_wiener(data, source, clip=True, user_settings=None):
@@ -666,28 +693,28 @@ def main():
     else:
         psf_input = zero_pad(psf_input, psf_target.shape, position='center')
 
-    tk, tk_fourier = deconv_wiener(psf_target, psf_input, args.reg_fact)
+    kernel, kernel_fourier = homogenization_kernel(psf_target, psf_input,
+                                                   reg_fact=args.reg_fact)
 
-    log.info('Kernel computed using wiener filtering and a regularisation '
+    log.info('Kernel computed using Wiener filtering and a regularisation '
              'parameter r = %.2e' % args.reg_fact)
 
     # Write kernel to FITS file
-    outfile = args.output
-    tkfits = pyfits.PrimaryHDU(data=tk)
-    format_kernel_header(tkfits, args, pixscale_target)
-    tkfits.writeto(outfile)
+    kernel_hdu = pyfits.PrimaryHDU(data=kernel)
+    format_kernel_header(kernel_hdu, args, pixscale_target)
+    kernel_hdu.writeto(args.output)
     # Write Fourier space kernel to FITS file
-    print("Currently the code does not save the Fourier transform "
-          "in a FITS file")
+    # print("Currently the code does not save the Fourier transform "
+    #       "in a FITS file")
     # outbase, outext = path.splitext(outfile)
     # outfile_dft = path.join(outbase, "_dft", outext)
     # tkfits_fourier = pyfits.PrimaryHDU(data=tk_fourier)
     # format_kernel_header(tkfits_fourier, args, pixscale_target)
     # tkfits_fourier.writeto(outfile_dft)
 
-    log.info('Kernel saved in %s' % outfile)
+    log.info('Kernel saved in {0.output}'.format(args))
 
-    print("make_psf_kernel: Output kernels saved in {}".format(outfile))
+    print("make_psf_kernel: Output kernels saved in {0.output}".format(args))
 
 
 if __name__ == '__main__':
