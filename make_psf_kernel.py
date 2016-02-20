@@ -35,9 +35,6 @@ Example:
 Author:
   Alexandre Boucaud <alexandre.boucaud@ias.u-psud.fr>
 
-Version:
-  0.5
-
 """
 from __future__ import print_function, division
 
@@ -234,7 +231,8 @@ def trim(image, shape):
         raise ValueError("TRIM: target size bigger than source one")
 
     if np.any(dshape % 2 != 0):
-        raise ValueError("TRIM: source and target shapes have different parity")
+        raise ValueError("TRIM: source and target shapes "
+                         "have different parity")
 
     idx, idy = np.indices(shape)
     offx, offy = dshape // 2
@@ -345,26 +343,26 @@ def psf2otf(psf, shape):
 
     """
     if np.all(psf == 0):
-        otf = np.zeros_like(psf)
-    else:
-        inshape = psf.shape
-        # Pad the PSF to outsize
-        psf = zero_pad(psf, shape, position='corner')
+        return np.zeros_like(psf)
 
-        # Circularly shift OTF so that the 'center' of the PSF is
-        # [0,0] element of the array
-        for axis, axis_size in enumerate(inshape):
-            psf = np.roll(psf, -int(axis_size / 2), axis=axis)
+    inshape = psf.shape
+    # Pad the PSF to outsize
+    psf = zero_pad(psf, shape, position='corner')
 
-        # Compute the OTF
-        otf = np.fft.fft2(psf)
+    # Circularly shift OTF so that the 'center' of the PSF is
+    # [0,0] element of the array
+    for axis, axis_size in enumerate(inshape):
+        psf = np.roll(psf, -int(axis_size / 2), axis=axis)
 
-        # Estimate the rough number of operations involved in the FFT
-        # and discard the PSF imaginary part if within roundoff error
-        # roundoff error  = machine epsilon = sys.float_info.epsilon
-        # or np.finfo().eps
-        n_ops = np.sum(psf.size * np.log2(psf.shape))
-        otf = np.real_if_close(otf, tol=n_ops)
+    # Compute the OTF
+    otf = np.fft.fft2(psf)
+
+    # Estimate the rough number of operations involved in the FFT
+    # and discard the PSF imaginary part if within roundoff error
+    # roundoff error  = machine epsilon = sys.float_info.epsilon
+    # or np.finfo().eps
+    n_ops = np.sum(psf.size * np.log2(psf.shape))
+    otf = np.real_if_close(otf, tol=n_ops)
 
     return otf
 
@@ -643,7 +641,9 @@ def main():
     # Resample high resolution image to the low one
     if pixscale_source != pixscale_target:
         try:
-            psf_source = imresample(psf_source, pixscale_source, pixscale_target)
+            psf_source = imresample(psf_source,
+                                    pixscale_source,
+                                    pixscale_target)
         except MemoryError:
             log.error('- COMPUTATION ABORTED -')
             log.error('The size of the resampled PSF would have '
@@ -656,8 +656,7 @@ def main():
         log.info('Source PSF resampled to the target pixel scale')
 
     # check the new size of the source vs. the target
-    if ((psf_source.shape[0] > psf_target.shape[0]) or
-        (psf_source.shape[1] > psf_target.shape[1])):
+    if psf_source.shape > psf_target.shape:
         psf_source = trim(psf_source, psf_target.shape)
     else:
         psf_source = zero_pad(psf_source, psf_target.shape, position='center')
@@ -672,23 +671,11 @@ def main():
     kernel_hdu = pyfits.PrimaryHDU(data=kernel)
     format_kernel_header(kernel_hdu, args, pixscale_target)
     kernel_hdu.writeto(args.output)
-    # Write Fourier space kernel to FITS file
-    # print("Currently the code does not save the Fourier transform "
-    #       "in a FITS file")
-    # outbase, outext = path.splitext(outfile)
-    # outfile_dft = path.join(outbase, "_dft", outext)
-    # tkfits_fourier = pyfits.PrimaryHDU(data=tk_fourier)
-    # format_kernel_header(tkfits_fourier, args, pixscale_target)
-    # tkfits_fourier.writeto(outfile_dft)
 
     log.info('Kernel saved in {0.output}'.format(args))
 
-    print("make_psf_kernel: Output kernels saved in {0.output}".format(args))
+    print("make_psf_kernel: Output kernel saved to {0.output}".format(args))
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except:
-        print(__doc__)
-        raise
+    main()
