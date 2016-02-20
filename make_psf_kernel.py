@@ -54,66 +54,35 @@ from os import path
 from scipy.ndimage import rotate, zoom
 from logging.handlers import RotatingFileHandler
 
-__version__ = '0.5'
+__version__ = '0.5.1'
 
 
 def parse_args():
     import argparse
-    # Starts with command line parsing
+
     parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        prog='make_psf_kernel',
+        version=__version__,
         description="Compute the homogenization kernel between two PSFs")
 
-    parser.add_argument(
-        'psf_input',
-        nargs='?',
-        metavar='psf_input',
-        type=str,
-        help="the kernel with highest resolution")
+    parser.add_argument('psf_source', type=str,
+                        help="FITS file of PSF image with highest resolution")
 
-    parser.add_argument(
-        'psf_target',
-        nargs='?',
-        metavar='psf_target',
-        type=str,
-        help="the kernel with lowest resolution")
+    parser.add_argument('psf_target', type=str,
+                        help="FITS file of PSF image with lowest resolution")
 
-    parser.add_argument(
-        'output',
-        nargs='?',
-        metavar='output',
-        type=str,
-        help="output file name")
+    parser.add_argument('output', type=str,
+                        help="File name for the output kernel")
 
-    parser.add_argument(
-        '--angle_input',
-        nargs='?',
-        metavar='angle_input',
-        type=float,
-        default=0.0,
-        const=0.0,
-        dest='angle_input',
-        help="rotation angle in degrees to apply to `psf_input`")
+    parser.add_argument('-s', '--angle_source', type=float, default=0.0,
+                        help="Rotation angle to apply to `psf_source` (deg)")
 
-    parser.add_argument(
-        '--angle_target',
-        nargs='?',
-        metavar='angle_target',
-        type=float,
-        default=0.0,
-        const=0.0,
-        dest='angle_target',
-        help="rotation angle in degrees to apply to `psf_target`")
+    parser.add_argument('-t', '--angle_target', type=float, default=0.0,
+                        help="Rotation angle to apply to `psf_target` (deg)")
 
-    parser.add_argument(
-        '-r',
-        '--reg_fact',
-        nargs='?',
-        metavar='reg_fact',
-        type=float,
-        default=1.e-4,
-        const=1.e-4,
-        dest='reg_fact',
-        help="regularisation parameter for the Wiener filter")
+    parser.add_argument('-r', '--reg_fact', type=float, default=1.e-4,
+                        help="Regularisation parameter for the Wiener filter")
 
     return parser.parse_args()
 
