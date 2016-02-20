@@ -12,19 +12,19 @@ make_psf_kernel
 Compute the homogenization kernel between two PSFs
 
 Usage:
-  make_psf_kernel <psf_input> <psf_target> <output>
-                  [--angle_input] [--angle_target] [-r, --reg_fact]
+  make_psf_kernel <psf_source> <psf_target> <output>
+                  [--angle_source] [--angle_target] [-r, --reg_fact]
                   [-h, --help]
 
 Args:
-  psf_input           path to the high resolution PSF (FITS image)
+  psf_source          path to the high resolution PSF (FITS image)
   psf_target          path to the low resolution PSF (FITS image)
   output              the output filename and path
 
 Optionals:
   -h, --help          print help (this)
   -r, --reg_fact      regularization factor [default 1.e-4]
-  --angle_input       rotation angle to apply to psf_input in deg
+  --angle_source      rotation angle to apply to psf_source in deg
                       [default 0]
   --angle_target      rotation angle to apply to psf_target in deg
                       [default 0]
@@ -165,7 +165,7 @@ def format_kernel_header(fits, args, pixel_scale):
     hdr.add_comment('File written with make_psf_kernel')
     hdr.add_comment('')
     hdr.add_comment('Kernel from PSF')
-    hdr.add_comment('=> {}'.format(path.basename(args.psf_input)))
+    hdr.add_comment('=> {}'.format(path.basename(args.psf_source)))
     hdr.add_comment('to PSF')
     hdr.add_comment('=> {}'.format(path.basename(args.psf_target)))
     hdr.add_comment('using a regularisation parameter '
@@ -205,14 +205,14 @@ def imrotate(image, angle, interp_order=1):
                   order=interp_order, reshape=False, prefilter=False)
 
 
-def imresample(image, input_pscale, target_pscale, interp_order=1):
+def imresample(image, source_pscale, target_pscale, interp_order=1):
     """Resample data array from one pixel scale to another
 
     Parameters
     ----------
     image : `numpy.ndarray`
         Input data array
-    input_pscale : float
+    source_pscale : float
         Pixel scale of ``image`` in arcseconds
     target_pscale : float
         Pixel scale of output array in arcseconds
@@ -226,7 +226,7 @@ def imresample(image, input_pscale, target_pscale, interp_order=1):
 
     """
     old_size = image.shape[0]
-    new_size_raw = old_size * input_pscale / target_pscale
+    new_size_raw = old_size * source_pscale / target_pscale
     new_size = int(round(new_size_raw))
     ratio = new_size / old_size
     if new_size > 10000:
@@ -262,10 +262,10 @@ def trim(image, shape):
 
     dshape = imshape - shape
     if np.any(dshape < 0):
-        raise ValueError("TRIM: target size bigger than input one")
+        raise ValueError("TRIM: target size bigger than source one")
 
     if np.any(dshape % 2 != 0):
-        raise ValueError("TRIM: input and target shapes have different parity")
+        raise ValueError("TRIM: source and target shapes have different parity")
 
     idx, idy = np.indices(shape)
     offx, offy = dshape // 2
@@ -307,7 +307,7 @@ def zero_pad(image, shape, position='corner'):
 
     dshape = shape - imshape
     if np.any(dshape < 0):
-        raise ValueError("ZERO_PAD: target size smaller than input one")
+        raise ValueError("ZERO_PAD: target size smaller than source one")
 
     pad_img = np.zeros(shape, dtype=image.dtype)
 
@@ -315,7 +315,7 @@ def zero_pad(image, shape, position='corner'):
 
     if position == 'center':
         if np.any(dshape % 2 != 0):
-            raise ValueError("ZERO_PAD: input and target shapes "
+            raise ValueError("ZERO_PAD: source and target shapes "
                              "have different parity.")
         offx, offy = dshape // 2
     else:
@@ -361,7 +361,7 @@ def psf2otf(psf, shape):
     Parameters
     ----------
     psf : `numpy.ndarray`
-        Input PSF array
+        PSF array
     shape : int
         Output shape of the OTF array
 
@@ -421,7 +421,7 @@ def deconv_wiener(psf, reg_fact):
     Parameters
     ----------
     psf: `numpy.ndarray`
-        2D array
+        PSF array
     reg_fact: float
         Regularisation parameter for the Wiener filter
 
@@ -641,40 +641,40 @@ def main():
     log = setup_logger(logname)
 
     # Load images (NaNs are set to 0)
-    psf_input = pyfits.getdata(args.psf_input)
+    psf_source = pyfits.getdata(args.psf_source)
     psf_target = pyfits.getdata(args.psf_target)
 
-    log.info('Input PSF loaded:  %s' % args.psf_input)
+    log.info('Source PSF loaded: %s' % args.psf_source)
     log.info('Target PSF loaded: %s' % args.psf_target)
 
     # Set NaNs to 0.0
-    psf_input = np.nan_to_num(psf_input)
+    psf_source = np.nan_to_num(psf_source)
     psf_target = np.nan_to_num(psf_target)
 
     # Retrieve the pixel scale of each image
-    pixscale_input = get_pixscale(args.psf_input)
+    pixscale_source = get_pixscale(args.psf_source)
     pixscale_target = get_pixscale(args.psf_target)
 
-    log.info('Input PSF pixel scale:  %.2f arcsec' % pixscale_input)
+    log.info('Source PSF pixel scale: %.2f arcsec' % pixscale_source)
     log.info('Target PSF pixel scale: %.2f arcsec' % pixscale_target)
 
     # Rotate images (if necessary)
-    if args.angle_input != 0.0:
-        psf_input = imrotate(psf_input, args.angle_input)
+    if args.angle_source != 0.0:
+        psf_source = imrotate(psf_source, args.angle_source)
     if args.angle_target != 0.0:
         psf_target = imrotate(psf_target, args.angle_target)
 
-    log.info('Input PSF rotated by  %.2f degrees' % args.angle_input)
+    log.info('Source PSF rotated by %.2f degrees' % args.angle_source)
     log.info('Target PSF rotated by %.2f degrees' % args.angle_target)
 
     # Normalize the PSFs
-    psf_input /= psf_input.sum()
+    psf_source /= psf_source.sum()
     psf_target /= psf_target.sum()
 
     # Resample high resolution image to the low one
-    if pixscale_input != pixscale_target:
+    if pixscale_source != pixscale_target:
         try:
-            psf_input = imresample(psf_input, pixscale_input, pixscale_target)
+            psf_source = imresample(psf_source, pixscale_source, pixscale_target)
         except MemoryError:
             log.error('- COMPUTATION ABORTED -')
             log.error('The size of the resampled PSF would have '
@@ -684,16 +684,16 @@ def main():
             print('Issue during the resampling step - see make_psf_kernel.log')
             sys.exit()
 
-        log.info('Input PSF resampled to the target pixel scale')
+        log.info('Source PSF resampled to the target pixel scale')
 
-    # check the new size of the input vs. the target
-    if ((psf_input.shape[0] > psf_target.shape[0]) or
-        (psf_input.shape[1] > psf_target.shape[1])):
-        psf_input = trim(psf_input, psf_target.shape)
+    # check the new size of the source vs. the target
+    if ((psf_source.shape[0] > psf_target.shape[0]) or
+        (psf_source.shape[1] > psf_target.shape[1])):
+        psf_source = trim(psf_source, psf_target.shape)
     else:
-        psf_input = zero_pad(psf_input, psf_target.shape, position='center')
+        psf_source = zero_pad(psf_source, psf_target.shape, position='center')
 
-    kernel, kernel_fourier = homogenization_kernel(psf_target, psf_input,
+    kernel, kernel_fourier = homogenization_kernel(psf_target, psf_source,
                                                    reg_fact=args.reg_fact)
 
     log.info('Kernel computed using Wiener filtering and a regularisation '
