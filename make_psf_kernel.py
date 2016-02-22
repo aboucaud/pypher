@@ -36,25 +36,25 @@ Author:
   Alexandre Boucaud <alexandre.boucaud@ias.u-psud.fr>
 
 """
-from __future__ import print_function, division
+from __future__ import absolute_import, print_function, division
 
 import os
 import sys
+import logging
 import numpy as np
 import numpy.random as npr
-import logging
 try:
-    import astropy.io.fits as pyfits
-except ImportError:
     import pyfits
-from os import path
+except ImportError:
+    import astropy.io.fits as pyfits
+from buildins import round
 from scipy.ndimage import rotate, zoom
-from logging.handlers import RotatingFileHandler
 
 __version__ = '0.5.1'
 
 
 def parse_args():
+    """Argument parser for the command line interface of make_psf_kernel"""
     import argparse
 
     parser = argparse.ArgumentParser(
@@ -131,9 +131,9 @@ def format_kernel_header(fits, args, pixel_scale):
     hdr.add_comment('File written with make_psf_kernel')
     hdr.add_comment('')
     hdr.add_comment('Kernel from PSF')
-    hdr.add_comment('=> {}'.format(path.basename(args.psf_source)))
+    hdr.add_comment('=> {}'.format(os.path.basename(args.psf_source)))
     hdr.add_comment('to PSF')
-    hdr.add_comment('=> {}'.format(path.basename(args.psf_target)))
+    hdr.add_comment('=> {}'.format(os.path.basename(args.psf_target)))
     hdr.add_comment('using a regularisation parameter '
                     'R = {:1.1e}'.format(args.reg_fact))
     hdr.add_comment('')
@@ -377,7 +377,7 @@ LAPLACIAN = np.array([[ 0, -1,  0],
 
 
 def deconv_wiener(psf, reg_fact):
-    """Create a Wiener filter using a PSF image
+    r"""Create a Wiener filter using a PSF image
 
     The signal is $\ell_2$ penalized by a 2D Laplacian operator that
     serves as a high-pass filter for the regularization process.
@@ -409,7 +409,7 @@ def deconv_wiener(psf, reg_fact):
 
 
 def homogenization_kernel(psf_target, psf_source, reg_fact=1e-4, clip=True):
-    """
+    r"""
     Compute the homogenization kernel to match two PSFs
 
     The deconvolution step is done using a Wiener filter with $\ell_2$
@@ -567,7 +567,7 @@ def deconv_unsup_wiener(data, source, clip=True, user_settings=None):
              'noise_uncertainty': np.std(gn_chain[settings['burnin']:]),
              'prior_uncertainty': np.std(gn_chain[settings['burnin']:]),
              'regul_uncertainty': np.std(gn_chain[settings['burnin']:]) /
-             np.std(gn_chain[settings['burnin']:])})
+                                  np.std(gn_chain[settings['burnin']:])})
 
 
 ########
@@ -581,7 +581,7 @@ def setup_logger(log_filename='make_psf_kernel.log'):
     logger = logging.getLogger('logger')
     logger.setLevel(logging.DEBUG)
     # Add the log message handler to the logger
-    handler = RotatingFileHandler(log_filename)
+    handler = logging.handlers.RotatingFileHandler(log_filename)
     # create formatter
     formatter = logging.Formatter('%(asctime)s - '
                                   '%(module)s - '
@@ -600,6 +600,7 @@ def setup_logger(log_filename='make_psf_kernel.log'):
 
 
 def main():
+    """Main script for make_psf_kernel"""
     args = parse_args()
 
     logname = 'make_psf_kernel.log'
@@ -611,8 +612,8 @@ def main():
     psf_source = pyfits.getdata(args.psf_source)
     psf_target = pyfits.getdata(args.psf_target)
 
-    log.info('Source PSF loaded: %s' % args.psf_source)
-    log.info('Target PSF loaded: %s' % args.psf_target)
+    log.info('Source PSF loaded: %s', args.psf_source)
+    log.info('Target PSF loaded: %s', args.psf_target)
 
     # Set NaNs to 0.0
     psf_source = np.nan_to_num(psf_source)
@@ -622,8 +623,8 @@ def main():
     pixscale_source = get_pixscale(args.psf_source)
     pixscale_target = get_pixscale(args.psf_target)
 
-    log.info('Source PSF pixel scale: %.2f arcsec' % pixscale_source)
-    log.info('Target PSF pixel scale: %.2f arcsec' % pixscale_target)
+    log.info('Source PSF pixel scale: %.2f arcsec', pixscale_source)
+    log.info('Target PSF pixel scale: %.2f arcsec', pixscale_target)
 
     # Rotate images (if necessary)
     if args.angle_source != 0.0:
@@ -631,8 +632,8 @@ def main():
     if args.angle_target != 0.0:
         psf_target = imrotate(psf_target, args.angle_target)
 
-    log.info('Source PSF rotated by %.2f degrees' % args.angle_source)
-    log.info('Target PSF rotated by %.2f degrees' % args.angle_target)
+    log.info('Source PSF rotated by %.2f degrees', args.angle_source)
+    log.info('Target PSF rotated by %.2f degrees', args.angle_target)
 
     # Normalize the PSFs
     psf_source /= psf_source.sum()
@@ -661,20 +662,20 @@ def main():
     else:
         psf_source = zero_pad(psf_source, psf_target.shape, position='center')
 
-    kernel, kernel_fourier = homogenization_kernel(psf_target, psf_source,
-                                                   reg_fact=args.reg_fact)
+    kernel, _ = homogenization_kernel(psf_target, psf_source,
+                                      reg_fact=args.reg_fact)
 
     log.info('Kernel computed using Wiener filtering and a regularisation '
-             'parameter r = %.2e' % args.reg_fact)
+             'parameter r = %.2e', args.reg_fact)
 
     # Write kernel to FITS file
     kernel_hdu = pyfits.PrimaryHDU(data=kernel)
     format_kernel_header(kernel_hdu, args, pixscale_target)
     kernel_hdu.writeto(args.output)
 
-    log.info('Kernel saved in {0.output}'.format(args))
+    log.info('Kernel saved in %s', args.output)
 
-    print("make_psf_kernel: Output kernel saved to {0.output}".format(args))
+    print("make_psf_kernel: Output kernel saved to %s" % args.output)
 
 
 if __name__ == '__main__':
