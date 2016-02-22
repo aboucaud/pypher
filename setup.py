@@ -13,10 +13,10 @@ def find_version(filepath):
 
     The syntax for the file version need to be in the form
     __version__ = 'a.b.c'
-    where
-    - a is the major version
-    - b is the minor version
-    - c is the patch number
+    which follows the semantic versioning http://semver.org/
+    * a : major version
+    * b : minor version
+    * c : patch version
 
     Parameters
     ----------
