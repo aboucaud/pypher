@@ -637,7 +637,7 @@ def main():
     """Main script for pypher"""
     args = parse_args()
 
-    logname = 'pypher.log'
+    logname = '%s.log' % args.output
     if os.path.exists(logname):
         os.remove(logname)
     log = setup_logger(logname)
