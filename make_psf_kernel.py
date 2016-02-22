@@ -47,7 +47,7 @@ try:
     import pyfits
 except ImportError:
     import astropy.io.fits as pyfits
-from buildins import round
+
 from scipy.ndimage import rotate, zoom
 
 __version__ = '0.5.1'
@@ -174,6 +174,9 @@ def imrotate(image, angle, interp_order=1):
 def imresample(image, source_pscale, target_pscale, interp_order=1):
     """Resample data array from one pixel scale to another
 
+    The resampling ensures the parity of the image is conserved
+    to preserve the centering.
+
     Parameters
     ----------
     image : `numpy.ndarray`
@@ -193,10 +196,17 @@ def imresample(image, source_pscale, target_pscale, interp_order=1):
     """
     old_size = image.shape[0]
     new_size_raw = old_size * source_pscale / target_pscale
-    new_size = int(round(new_size_raw))
-    ratio = new_size / old_size
+    new_size = int(np.ceil(new_size_raw))
+
     if new_size > 10000:
-        raise MemoryError()
+        raise MemoryError("The resampling will yield a too large image. "
+                          "Please resize the input PSF image.")
+
+    # Chech for parity
+    if not (old_size - new_size) % 2:
+        new_size += 1
+
+    ratio = new_size / old_size
 
     return zoom(image, ratio, order=interp_order) / ratio**2
 
