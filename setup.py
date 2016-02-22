@@ -1,40 +1,58 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import re
+
+# Copyright (c) 2015 IAS / CNRS / Univ. Paris-Sud
+# BSD License - see attached LICENSE file
+# Author: Alexandre Boucaud <alexandre.boucaud@ias.u-psud.fr>
 from setuptools import setup, find_packages
 
 
-def find_version():
-    """Find project version"""
-    with open('make_psf_kernel.py') as pfile:
-        version_file = pfile.read()
-    try:
-        version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
-                                  version_file, re.M)
-        version = version_match.group(1)
-    except AttributeError:
-        version = 'Unknown'
+def find_version(filepath):
+    """
+    Find project version in a given file
 
+    The syntax for the file version need to be in the form
+    __version__ = 'a.b.c'
+    where
+    - a is the major version
+    - b is the minor version
+    - c is the patch number
+
+    Parameters
+    ----------
+    filepath: str
+        Path to the file containing a version number
+
+    Returns
+    -------
+    version: str
+        The program version in the form 'a.b.c' as described above
+
+    """
+    with open(filepath) as pfile:
+        for line in pfile.readlines():
+            if line.startswith('__version__'):
+                version = line.strip()[-6:-1]
     return version
 
 setup(
-    name='make_psf_kernel',
+    name='pypher',
     author='Alexandre Boucaud',
     author_email='alexandre.boucaud@ias.u-psud.fr',
     maintainer='Alexandre Boucaud',
     maintainer_email='boucaud.alexandre@gmail.com',
-    description='Compute an homogenization kernel between two PSF',
+    description='Python-based PSF Homogenization kERnels production',
     license='New BSD',
-    url='https://git.ias.u-psud.fr/aboucaud/make_psf_kernel/',
-    download_url='https://git.ias.u-psud.fr/aboucaud/make_psf_kernel/',
-    version=find_version(),
+    url='https://git.ias.u-psud.fr/aboucaud/pypher/',
+    download_url='https://git.ias.u-psud.fr/aboucaud/pypher/',
+    version=find_version('pypher/pypher.py'),
     long_description=open('README.md').read(),
     zip_safe=False,
     packages=find_packages(),
     include_package_data=True,
     entry_points={
         'console_scripts': [
-            'mk-kernel = make_psf_kernel:main',
+            'pypher = pypher.pypher:main',
         ],
     },
     install_requires=[

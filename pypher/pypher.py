@@ -2,19 +2,19 @@
 # -*- coding: utf-8 -*-
 
 # Copyright (c) 2015 IAS / CNRS / Univ. Paris-Sud
-# New BSD License
+# BSD License - see attached LICENSE file
 # Author: Alexandre Boucaud <alexandre.boucaud@ias.u-psud.fr>
 
 """
-===============
-make_psf_kernel
-===============
+================================================
+pypher - Python-based PSF Homogenization kERnels
+================================================
 Compute the homogenization kernel between two PSFs
 
 Usage:
-  make_psf_kernel <psf_source> <psf_target> <output>
-                  [--angle_source] [--angle_target] [-r, --reg_fact]
-                  [-h, --help]
+  pypher <psf_source> <psf_target> <output>
+         [-s, --angle_source] [-t, --angle_target] [-r, --reg_fact]
+         [-h, --help]
 
 Args:
   psf_source          path to the high resolution PSF (FITS image)
@@ -24,16 +24,13 @@ Args:
 Optionals:
   -h, --help          print help (this)
   -r, --reg_fact      regularization factor [default 1.e-4]
-  --angle_source      rotation angle to apply to psf_source in deg
+  -s, --angle_source  rotation angle to apply to psf_source in deg
                       [default 0]
-  --angle_target      rotation angle to apply to psf_target in deg
+  -t, --angle_target  rotation angle to apply to psf_target in deg
                       [default 0]
 
 Example:
-  make_psf_kernel psf_a.fits psf_b.fits kernel_a_to_b.fits -r 1.e-5
-
-Author:
-  Alexandre Boucaud <alexandre.boucaud@ias.u-psud.fr>
+  pypher psf_a.fits psf_b.fits kernel_a_to_b.fits -r 1.e-5
 
 """
 from __future__ import absolute_import, print_function, division
@@ -54,13 +51,12 @@ __version__ = '0.5.1'
 
 
 def parse_args():
-    """Argument parser for the command line interface of make_psf_kernel"""
+    """Argument parser for the command line interface of `pypher`å"""
     import argparse
 
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        prog='make_psf_kernel',
-        version=__version__,
+        prog='pypher',
         description="Compute the homogenization kernel between two PSFs")
 
     parser.add_argument('psf_source', type=str,
@@ -89,7 +85,20 @@ def parse_args():
 
 
 def get_pixscale(filename):
-    """Retreive the image pixel scale in its FITS header"""
+    """
+    Retreive the image pixel scale from its FITS header
+
+    Parameters
+    ----------
+    filename: str
+        FITS filename
+
+    Returns
+    -------
+    pixel_scale: float
+        The pixel scale of the PSF image in arcseconds
+
+    """
     header = pyfits.getheader(filename)
     pixel_key = ''
     pkey_list = ['PIXSCALE', 'PIXSCALX', 'SECPIX',
@@ -128,7 +137,7 @@ def format_kernel_header(fits, args, pixel_scale):
             del hdr[comment_key]
     hdr.add_comment('='*50)
     hdr.add_comment('')
-    hdr.add_comment('File written with make_psf_kernel')
+    hdr.add_comment('File written with pypher')
     hdr.add_comment('')
     hdr.add_comment('Kernel from PSF')
     hdr.add_comment('=> {}'.format(os.path.basename(args.psf_source)))
@@ -150,7 +159,8 @@ def format_kernel_header(fits, args, pixel_scale):
 
 
 def imrotate(image, angle, interp_order=1):
-    """Rotate an image from North to East given an angle in degrees
+    """
+    Rotate an image from North to East given an angle in degrees
 
     Parameters
     ----------
@@ -172,7 +182,8 @@ def imrotate(image, angle, interp_order=1):
 
 
 def imresample(image, source_pscale, target_pscale, interp_order=1):
-    """Resample data array from one pixel scale to another
+    """
+    Resample data array from one pixel scale to another
 
     The resampling ensures the parity of the image is conserved
     to preserve the centering.
@@ -212,7 +223,8 @@ def imresample(image, source_pscale, target_pscale, interp_order=1):
 
 
 def trim(image, shape):
-    """Trim image to a given shape
+    """
+    Trim image to a given shape
 
     Parameters
     ----------
@@ -387,7 +399,8 @@ LAPLACIAN = np.array([[ 0, -1,  0],
 
 
 def deconv_wiener(psf, reg_fact):
-    r"""Create a Wiener filter using a PSF image
+    r"""
+    Create a Wiener filter using a PSF image
 
     The signal is $\ell_2$ penalized by a 2D Laplacian operator that
     serves as a high-pass filter for the regularization process.
@@ -459,7 +472,8 @@ def homogenization_kernel(psf_target, psf_source, reg_fact=1e-4, clip=True):
 
 
 def deconv_unsup_wiener(data, source, clip=True, user_settings=None):
-    """Return an estimation of the regularisation parameter
+    """
+    Return an estimation of the regularisation parameter
 
     Return an estimation of the regularisation parameter by
     unsupervised Wiener-Hunt deconvolution, see References.
@@ -585,8 +599,18 @@ def deconv_unsup_wiener(data, source, clip=True, user_settings=None):
 ########
 
 
-def setup_logger(log_filename='make_psf_kernel.log'):
-    """Sets up a logger"""
+def setup_logger(log_filename='pypher.log'):
+    """
+    Set up and return a logger
+
+    The logger records the time, modulename, method and message
+
+    Parameters
+    ----------
+    log_filename: str
+        Name of the output logfile
+
+    """
     # create logger
     logger = logging.getLogger('logger')
     logger.setLevel(logging.DEBUG)
@@ -610,10 +634,10 @@ def setup_logger(log_filename='make_psf_kernel.log'):
 
 
 def main():
-    """Main script for make_psf_kernel"""
+    """Main script for pypher"""
     args = parse_args()
 
-    logname = 'make_psf_kernel.log'
+    logname = 'pypher.log'
     if os.path.exists(logname):
         os.remove(logname)
     log = setup_logger(logname)
@@ -661,7 +685,7 @@ def main():
                       'exceeded 10K x 10K')
             log.error('Please resize your image and try again')
 
-            print('Issue during the resampling step - see make_psf_kernel.log')
+            print('Issue during the resampling step - see pypher.log')
             sys.exit()
 
         log.info('Source PSF resampled to the target pixel scale')
@@ -685,7 +709,7 @@ def main():
 
     log.info('Kernel saved in %s', args.output)
 
-    print("make_psf_kernel: Output kernel saved to %s" % args.output)
+    print("pypher: Output kernel saved to %s" % args.output)
 
 
 if __name__ == '__main__':
