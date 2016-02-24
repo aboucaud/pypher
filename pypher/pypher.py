@@ -5,39 +5,44 @@
 # BSD License - see attached LICENSE file
 # Author: Alexandre Boucaud <alexandre.boucaud@ias.u-psud.fr>
 
-"""
+r"""
+ ____        ____  _   _ _____ ____
+|  _ \ _   _|  _ \| | | | ____|  _ \
+| |_) | | | | |_) | |_| |  _| | |_) |
+|  __/| |_| |  __/|  _  | |___|  _ <
+|_|    \__, |_|   |_| |_|_____|_| \_\
+       |___/
+---
+Python-based PSF Homogenization kERnels
 ================================================
-pypher - Python-based PSF Homogenization kERnels
-================================================
+
 Compute the homogenization kernel between two PSFs
 
 Usage:
-  pypher <psf_source> <psf_target> <output>
-         [-s, --angle_source] [-t, --angle_target] [-r, --reg_fact]
-         [-h, --help]
+  pypher psf_source psf_target output
+         [-s ANGLE_SOURCE] [-t ANGLE_TARGET] [-r REG_FACT]
+  pypher (-h | --help)
 
-Args:
+Arguments:
   psf_source          path to the high resolution PSF (FITS image)
   psf_target          path to the low resolution PSF (FITS image)
   output              the output filename and path
 
-Optionals:
+Options:
   -h, --help          print help (this)
-  -r, --reg_fact      regularization factor [default 1.e-4]
-  -s, --angle_source  rotation angle to apply to psf_source in deg
-                      [default 0]
-  -t, --angle_target  rotation angle to apply to psf_target in deg
-                      [default 0]
+  -r, --reg_fact      regularization factor (default 1.e-4)
+  -s, --angle_source  rotation angle to apply to psf_source in deg (default 0)
+  -t, --angle_target  rotation angle to apply to psf_target in deg (default 0)
 
 Example:
   pypher psf_a.fits psf_b.fits kernel_a_to_b.fits -r 1.e-5
-
 """
 from __future__ import absolute_import, print_function, division
 
 import os
 import sys
 import logging
+import argparse
 import numpy as np
 import numpy.random as npr
 try:
@@ -50,11 +55,26 @@ from scipy.ndimage import rotate, zoom
 __version__ = '0.5.1'
 
 
+class ArgumentParserError(Exception):
+    pass
+
+
+class ThrowingArgumentParser(argparse.ArgumentParser):
+    """Wrapper around ArgumentParser to overwrite the raised error
+
+    References
+    ----------
+    http://stackoverflow.com/a/14728477
+
+    """
+    def error(self, message):
+        """Custom empty error"""
+        raise ArgumentParserError(message)
+
+
 def parse_args():
     """Argument parser for the command line interface of `pypher`å"""
-    import argparse
-
-    parser = argparse.ArgumentParser(
+    parser = ThrowingArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         prog='pypher',
         description="Compute the homogenization kernel between two PSFs")
@@ -635,7 +655,11 @@ def setup_logger(log_filename='pypher.log'):
 
 def main():
     """Main script for pypher"""
-    args = parse_args()
+    try:
+        args = parse_args()
+    except ArgumentParserError:
+        print(__doc__)
+        sys.exit()
 
     logname = '%s.log' % args.output
     if os.path.exists(logname):
