@@ -51,29 +51,13 @@ except ImportError:
     import astropy.io.fits as pyfits
 
 from scipy.ndimage import rotate, zoom
+from .parser import ThrowingArgumentParser, ArgumentParserError
 
 __version__ = '0.5.1'
 
 
-class ArgumentParserError(Exception):
-    pass
-
-
-class ThrowingArgumentParser(argparse.ArgumentParser):
-    """Wrapper around ArgumentParser to overwrite the raised error
-
-    References
-    ----------
-    http://stackoverflow.com/a/14728477
-
-    """
-    def error(self, message):
-        """Custom empty error"""
-        raise ArgumentParserError(message)
-
-
 def parse_args():
-    """Argument parser for the command line interface of `pypher`å"""
+    """Argument parser for the command line interface of `pypher`"""
     parser = ThrowingArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         prog='pypher',
