@@ -45,12 +45,10 @@ import logging
 import argparse
 import numpy as np
 import numpy.random as npr
-try:
-    import pyfits
-except ImportError:
-    import astropy.io.fits as pyfits
 
 from scipy.ndimage import rotate, zoom
+
+from . import fitsutils as fits
 from .parser import ThrowingArgumentParser, ArgumentParserError
 
 __version__ = '0.5.1'
@@ -88,78 +86,42 @@ def parse_args():
 ################
 
 
-def get_pixscale(filename):
+def format_kernel_header(fits_file, args, pixel_scale):
     """
-    Retreive the image pixel scale from its FITS header
+    Write the input parameters of pypher as comments in the header
+
+    The kernel header therefore contains the name of the PSF files
+    it has been created from.
+    The pixel scale of the kernel is also written as a dedicated
+    kernel key.
 
     Parameters
     ----------
-    filename: str
-        FITS filename
-
-    Returns
-    -------
+    fits_file: str
+        Path to the FITS kernel image
+    args: `argparse.Namespace`
+        Container for the parsed values
     pixel_scale: float
-        The pixel scale of the PSF image in arcseconds
+        Pixel scale of the kernel
 
     """
-    header = pyfits.getheader(filename)
-    pixel_key = ''
-    pkey_list = ['PIXSCALE', 'PIXSCALX', 'SECPIX',
-                 'CDELT1', 'CDELT2', 'CD1_1']
-    for key in pkey_list:
-        if key in header.keys():
-            pixel_key = key
-            break
-    if not pixel_key:
-        raise IOError("Pixel size not found in FITS file")
+    fits.clear_comments(fits_file)
 
-    pixel_scale = abs(header[pixel_key])
-    if pixel_key in ['CDELT1', 'CDELT2', 'CD1_1']:
-        pixel_scale *= 3600
+    pypher_comments = [
+        '=' * 50, '',
+        'File written with PyPHER',
+        '------------------------', '',
+        'Kernel from PSF', '',
+        '=> {0}'.format(os.path.basename(args.psf_source)), '',
+        'to PSF', '',
+        '=> {0}'.format(os.path.basename(args.psf_target)), '',
+        'using a regularisation parameter '
+        'R = {0:1.1e}'.format(args.reg_fact), '',
+        '=' * 50
+    ]
+    fits.add_comments(fits_file, pypher_comments)
 
-    return pixel_scale
-
-
-def format_kernel_header(fits, args, pixel_scale):
-    """
-    Format the output kernel header
-
-    Parameters
-    ----------
-    args: Argument Parser
-
-    Returns
-    -------
-    header: `pyfits.Header`
-        Output kernel formatted header
-
-    """
-    hdr = fits.header
-    for comment_key in ['COMMENT', 'comment', 'Comment']:
-        if comment_key in hdr.keys():
-            del hdr[comment_key]
-    hdr.add_comment('='*50)
-    hdr.add_comment('')
-    hdr.add_comment('File written with pypher')
-    hdr.add_comment('')
-    hdr.add_comment('Kernel from PSF')
-    hdr.add_comment('=> {}'.format(os.path.basename(args.psf_source)))
-    hdr.add_comment('to PSF')
-    hdr.add_comment('=> {}'.format(os.path.basename(args.psf_target)))
-    hdr.add_comment('using a regularisation parameter '
-                    'R = {:1.1e}'.format(args.reg_fact))
-    hdr.add_comment('')
-    hdr.add_comment('='*50)
-
-    for psc_key in ['PIXSCALE', 'PIXSCALX', 'SECPIX',
-                    'CDELT1', 'CDELT2', 'CD1_1']:
-        if psc_key in hdr.keys():
-            del hdr[psc_key]
-    hdr['CD1_1'] = (pixel_scale, "pixel scale in deg.")
-    hdr['CD1_2'] = (0, "pixel scale in deg.")
-    hdr['CD2_1'] = (0, "pixel scale in deg.")
-    hdr['CD2_2'] = (pixel_scale, "pixel scale in deg.")
+    fits.write_pixelscale(fits_file, pixel_scale)
 
 
 def imrotate(image, angle, interp_order=1):
@@ -645,14 +607,17 @@ def main():
         print(__doc__)
         sys.exit()
 
-    logname = '%s.log' % args.output
+    kernel_basename, _ = os.path.splitext(args.output)
+    kernel_fits = kernel_basename + '.fits'
+
+    logname = '%s.log' % kernel_basename
     if os.path.exists(logname):
         os.remove(logname)
     log = setup_logger(logname)
 
     # Load images (NaNs are set to 0)
-    psf_source = pyfits.getdata(args.psf_source)
-    psf_target = pyfits.getdata(args.psf_target)
+    psf_source = fits.getdata(args.psf_source)
+    psf_target = fits.getdata(args.psf_target)
 
     log.info('Source PSF loaded: %s', args.psf_source)
     log.info('Target PSF loaded: %s', args.psf_target)
@@ -662,8 +627,8 @@ def main():
     psf_target = np.nan_to_num(psf_target)
 
     # Retrieve the pixel scale of each image
-    pixscale_source = get_pixscale(args.psf_source)
-    pixscale_target = get_pixscale(args.psf_target)
+    pixscale_source = fits.get_pixscale(args.psf_source)
+    pixscale_target = fits.get_pixscale(args.psf_target)
 
     log.info('Source PSF pixel scale: %.2f arcsec', pixscale_source)
     log.info('Target PSF pixel scale: %.2f arcsec', pixscale_target)
@@ -711,13 +676,12 @@ def main():
              'parameter r = %.2e', args.reg_fact)
 
     # Write kernel to FITS file
-    kernel_hdu = pyfits.PrimaryHDU(data=kernel)
-    format_kernel_header(kernel_hdu, args, pixscale_target)
-    kernel_hdu.writeto(args.output)
+    fits.writeto(kernel_fits, data=kernel)
+    format_kernel_header(kernel_fits, args, pixscale_target)
 
-    log.info('Kernel saved in %s', args.output)
+    log.info('Kernel saved in %s', kernel_fits)
 
-    print("pypher: Output kernel saved to %s" % args.output)
+    print("pypher: Output kernel saved to %s" % kernel_fits)
 
 
 if __name__ == '__main__':
