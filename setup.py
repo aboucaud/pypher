@@ -53,6 +53,7 @@ setup(
     entry_points={
         'console_scripts': [
             'pypher = pypher.pypher:main',
+            'addpixscl = pypher.addpixscl:main',
         ],
     },
     install_requires=[
