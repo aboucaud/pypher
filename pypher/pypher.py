@@ -5,15 +5,8 @@
 # BSD License - see attached LICENSE file
 # Author: Alexandre Boucaud <alexandre.boucaud@ias.u-psud.fr>
 
-r"""
- ____        ____  _   _ _____ ____
-|  _ \ _   _|  _ \| | | | ____|  _ \
-| |_) | | | | |_) | |_| |  _| | |_) |
-|  __/| |_| |  __/|  _  | |___|  _ <
-|_|    \__, |_|   |_| |_|_____|_| \_\
-       |___/
----
-Python-based PSF Homogenization kERnels
+"""
+PyPHER - Python-based PSF Homogenization kERnels
 ================================================
 
 Compute the homogenization kernel between two PSFs
@@ -22,17 +15,6 @@ Usage:
   pypher psf_source psf_target output
          [-s ANGLE_SOURCE] [-t ANGLE_TARGET] [-r REG_FACT]
   pypher (-h | --help)
-
-Arguments:
-  psf_source          path to the high resolution PSF (FITS image)
-  psf_target          path to the low resolution PSF (FITS image)
-  output              the output filename and path
-
-Options:
-  -h, --help          print help (this)
-  -r, --reg_fact      regularization factor (default 1.e-4)
-  -s, --angle_source  rotation angle to apply to psf_source in deg (default 0)
-  -t, --angle_target  rotation angle to apply to psf_target in deg (default 0)
 
 Example:
   pypher psf_a.fits psf_b.fits kernel_a_to_b.fits -r 1.e-5
