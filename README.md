@@ -1,71 +1,97 @@
-`pypher`
-========
+`pypher` - Python-based PSF Homogenization kERnels
+==================================================
 
-### Python-based PSF Homogenization kERnels
+Compute the homogenization kernel between two PSFs
 
-
-Compute the homogenization kernel between two PSFs using Wiener filtering
-
-#### Description
-
-Quick summary of the tasks performed by this code:
+Features
+--------
 
   1. Replacing NaNs by zeros,
   2. Warping (rotation + resampling) of the PSFs (if necessary),
-  3. Filtering in Fourier space using a regularized Wiener filter (details [here](method.md)),
-  4. Saving real space version of the produced kernel.
+  3. Filtering in Fourier space using a regularized Wiener filter,
+  4. Producing an image space homogenization kernel.
 
-For simplicity, this code **does not** take care of:
+This code **does not** take care of:
   - the _interpolation_ of NaN values,
   - the _centering_ of the PSF images,
   - the _minimization_ of the kernel size.
 
-#### Installation
+Installation
+------------
+PyPHER works both with Python 2.7 and 3.3 or later
 
-There are two ways to get this code running:
-
-  1. If you have `git` installed, the best way is to create a new directory and run the following command to retrieve the current version of the file,
-    ```bash
-    git clone git@git.ias.u-psud.fr:aboucaud/pypher.git
-    ```
-
-  2. Otherwise you will find on top of the [main page](https://git.ias.u-psud.fr/aboucaud/pypher) a download button to get a compressed archive containing the code.
-
-To be able to run `pypher`, you will need the following Python libraries installed: **numpy**, **scipy** and **pyfits (>= 3.3)** or **astropy (>=1.0)**. If you have trouble installing these libraries, either contact the server administrator, or refer to [these instructions](https://git.ias.u-psud.fr/abeelen/python-notebook/blob/master/PythonInstall.md) for your personal computer.
-
-Last, in order to run this code in any directory, you should add its location to your `PATH`.
-
-#### Usage
+### Option 1: [Pip](https://pypi.python.org/pypi/pypher)
 
 ```bash
-pypher <psf_input> <psf_target> <output>
-                [--angle_input] [--angle_target] [-r, --reg_fact]
-                [-h, --help]
+$ pip install pypher
 ```
 
-##### Args
-- `psf_input`           path to the high resolution PSF (FITS image)
-- `psf_target`          path to the low resolution PSF (FITS image)
+### Option 2: from source
+
+```bash
+$ git clone https://git.ias.u-psud.fr/aboucaud/pypher.git
+$ cd pypher
+$ python setup.py install
+```
+
+#### Dependencies
+
+As listed in the [requirements.txt](requirements.txt), the following Python libraries need to be installed:
+- [numpy](http://www.numpy.org/) (>=1.7.2)
+- [scipy](http://www.scipy.org/) (>=0.9.0)
+- [pyfits](http://www.stsci.edu/institute/software_hardware/pyfits/) (>= 3.2) or [astropy](http://www.astropy.org/) (>=1.0.8)
+
+In case these are not automatically installed during the above procedures, simply use:
+```bash
+$ pip install -r requirements.txt
+```
+
+
+Usage
+-----
+
+```bash
+$ pypher psf_source psf_target output
+         [-s ANGLE_SOURCE] [-t ANGLE_TARGET] [-r REG_FACT]
+$ pypher (-h | --help)
+```
+
+### Arguments
+- `psf_source`          path to the high resolution PSF image (FITS file)
+- `psf_target`          path to the low resolution PSF image (FITS file)
 - `output`              the output filename and path
 
-##### Optionals
-- `-h, --help`          print help (this)
-- `-r, --reg_fact`      regularization factor [default `1.e-4`]
-- `--angle_input`       rotation angle to apply to psf_input in deg [default `0`]
-- `--angle_target`      rotation angle to apply to psf_target in deg [default `0`]
+### Options
+- `-h, --help`          print help
+- `-r, --reg_fact`      regularization factor (default 1.e-4)
+- `-s, --angle_source`  rotation angle in deg to apply to `psf_source` (default 0)
+- `-t, --angle_target`  rotation angle in deg to apply to `psf_target` (default 0)
 
-#### Example
+### Basic example
 
-An example bash script `run_herschel_bash.sh`, is provided along with this code (see [here](run_herschel_bash.sh)). Feel free to modify it to your needs.
-Otherwise a short example of a call to the code is
 ```bash
-pypher psf_a.fits psf_b.fits kernel_a_to_b.fits -r 1.e-5
+$ pypher psf_a.fits psf_b.fits kernel_a_to_b.fits -r 1.e-5
 ```
-<!-- This will create two files in the current directory: `kernel_a_to_b.fits` and `kernel_a_to_b_dft.fits`. -->
-This will create two files in the current directory: `kernel_a_to_b.fits` and `pypher.log` where every useful information about the processing is stored.
 
-#### Author
-  Alexandre Boucaud <alexandre.boucaud@ias.u-psud.fr>
+This will create the desired kernel `kernel_a_to_b.fits` and a short log `kernel_a_to_b.log` with information about the processing.
 
-#### Version
-  0.5
+
+Acknowledging
+-------------
+
+If you make use of any product of this code in a scientific publication, please consider acknowledging the work by citing the following paper
+
+Boucaud, Bocchio _et al._ (2016) _in prep._
+
+Contributing
+------------
+
+We welcome all contributions.
+
+To report any bugs or file feature requests, please use the [issue tracker](https://git.ias.u-psud.fr/aboucaud/pypher/issues).
+Otherwise feel free to fork the repository, make your own changes and send a pull request.
+
+
+Licence
+-------
+This work is licensed under a 3-clause BSD style license - see [LICENSE](LICENSE) file.
