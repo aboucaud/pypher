@@ -46,7 +46,8 @@ def write_pixelscale(fits_file, value, ext=0):
     Write pixel scale information to a FITS file header
 
     The input pixel scale value is given in arcseconds but is stored
-    in degrees since the chosen header KEY is CDX_X
+    in degrees since the chosen header KEYS are the linear
+    transformation matrix parameters CDi_ja
 
     Parameters
     ----------
@@ -59,7 +60,7 @@ def write_pixelscale(fits_file, value, ext=0):
 
     """
     pixscl = value / 3600
-    comment = 'pixel scale in degrees'
+    comment = 'Linear transformation matrix'
 
     pyfits.setval(fits_file, 'CD1_1', value=pixscl, ext=ext, comment=comment)
     pyfits.setval(fits_file, 'CD1_2', value=0.0, ext=ext, comment=comment)
@@ -85,7 +86,7 @@ def get_pixscale(fits_file):
     pixel_keys = has_pixelscale(fits_file)
 
     if not pixel_keys:
-        raise IOError("Pixel scale not found in {0}. ".format(fits_file))
+        raise IOError("Pixel scale not found in {0}.".format(fits_file))
 
     pixel_key = pixel_keys.pop()
     pixel_scale = abs(pyfits.getval(fits_file, pixel_key))
