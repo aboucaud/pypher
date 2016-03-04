@@ -18,7 +18,7 @@ Features
 
 **Note:** ``pypher`` needs the pixel scale information to be present in the FITS files. If not, use the provided ``addpixscl`` method to add this missing info.
 
-.. warning:: This code **does not**    
+**Warning:** This code **does not**    
 
     * interpolate NaN values (replaced by 0 instead),
     * center PSF images,
@@ -66,4 +66,4 @@ please consider acknowledging the work by citing the following paper
 
 Boucaud, Bocchio *et al.* (2016) *in prep.*
 
-.. note:: To be submitted **soon**
+**Note:** To be submitted **soon**

@@ -32,7 +32,7 @@ from scipy.ndimage import rotate, zoom
 from . import fitsutils as fits
 from .parser import ThrowingArgumentParser, ArgumentParserError
 
-__version__ = '0.6'
+__version__ = '0.6.0'
 
 
 def parse_args():
