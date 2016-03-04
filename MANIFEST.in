@@ -1,0 +1,13 @@
+include README.rst
+include LICENSE
+
+include docs/Makefile
+include docs/conf.py
+recursive-include docs *.rst
+
+exclude *.sh
+exclude .gitignore
+exclude Makefile
+
+global-exclude *.pyc
+global-exclude *.DS_Store
