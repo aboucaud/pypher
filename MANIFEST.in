@@ -8,6 +8,9 @@ recursive-include docs *.rst
 exclude *.sh
 exclude .gitignore
 exclude Makefile
+exclude tox.ini
+exclude TODO
+exclude .pylintrc
 
 global-exclude *.pyc
 global-exclude *.DS_Store
