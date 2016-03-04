@@ -57,9 +57,9 @@ setup(
         ],
     },
     install_requires=[
-        'numpy >= 1.7.2',
-        'scipy >= 0.9.0',
-        'pyfits >= 3.2.0'
+        'numpy>=1.7.2',
+        'scipy>=0.9',
+        'pyfits>=3.2'
     ],
     classifiers=[
         'Programming Language :: Python',
