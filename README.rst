@@ -2,6 +2,8 @@
 PyPHER - Python-based PSF Homogenization kERnels
 ====================================================
 
+|docs|
+
 Compute an homogenization kernel between two PSFs.
 
 This code is well suited for PSF matching applications in both an astronomical or microscopy context.
@@ -67,3 +69,8 @@ please consider acknowledging the work by citing the following paper
 Boucaud, Bocchio *et al.* (2016) *in prep.*
 
 **Note:** To be submitted **soon**
+
+.. |docs| image:: https://readthedocs.org/projects/pypher/badge/?version=latest
+    :alt: Documentation Status
+    :scale: 100%
+    :target: https://pypher.readthedocs.org/en/latest/?badge=latest
