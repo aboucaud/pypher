@@ -4,43 +4,50 @@
 PSF Homogenization kERnels - ``pypher``
 ***************************************
 
-Compute the homogenization kernel between two PSFs
+.. image:: _static/logo.jpg
+    :scale: 40 %
+    :alt: pypher logo
+    :align: right
 
-Features:
+Compute an homogenization kernel between two PSFs
 
-1. Replace NaNs by zeros,
-2. Warps (rotation + resampling) the PSFs if necessary,
-3. Filtering in Fourier space using a regularized Wiener filter (details
-   `here <method.md>`__),
-4. Saving real space version of the produced kernel.
+This code is well suited for PSF matching applications in both an astronomical or microscopy context.
 
-.. note::
-    ``pypher`` needs the pixel scale information to be present in the FITS files.
-    If not, use the provided ``addpixscl`` method to add this missing info.
+It has been developed as part of the ESA Euclid_ mission and is currently being used for multi-band photometric studies of HST_ (visible) and Herschel_ (IR) data.
 
-For simplicity, this code **does not** take care of: - the
-*interpolation* of NaN values, - the *centering* of the PSF images, -
-the *minimization* of the kernel size.
+Features
+========
 
+1. **Warp** (rotation + resampling) the PSF images (if necessary),
+2. **Filter** images in Fourier space using a regularized Wiener filter,
+3. **Produce** a homogenization kernel.
 
-Quick install
-=============
+**Note:** ``pypher`` needs the pixel scale information to be present in the FITS files. If not, use the provided ``addpixscl`` method to add this missing info.
 
-To install pypher, simply:
+.. warning:: This code **does not**    
+
+    * interpolate NaN values (replaced by 0 instead),
+    * center PSF images,
+    * minimize the kernel size.
+
+Quick setup
+===========
+
+In most cases the code can be installed via
 
 .. code:: bash
 
     $ pip install pypher
 
-and start working with it right away:
+and a kernel can then be produced from two PSFs with a simple command line
 
 .. code:: bash
 
     $ pypher psf_a.fits psf_b.fits kernel_a_to_b.fits
 
-Other installation procedures are described in :ref:`installation`.
+Other installation procedures are described on the :ref:`installation page <installation>` and further command line options :ref:`here <usage>`.
 
-User Guide:
+User Guide
 ==========
 
 .. toctree::
@@ -58,18 +65,23 @@ Acknowledging
 If you make use of any product of this code in a scientific publication,
 please consider acknowledging the work by citing the following paper
 
-Boucaud, Bocchio *et al.* (2015) *in prep.*
-
-.. Licence
-.. =======
-
-.. This work is licensed under a 3-clause BSD style license - see `license`_.
+Boucaud, Bocchio *et al.* (2016) *in prep.*
 
 
-:Authors:
-    Alexandre Boucaud <alexandre.boucaud@ias.u-psud.fr>
+.. note:: To be submitted **soon**
 
+----
+
+:Author:
+    Alexandre Boucaud 
+:Email:
+    alexandre.boucaud [at] ias.u-psud.fr
 :Licence:
-    This work is licensed under a 3-clause BSD style license - see license_.
+    This work is licensed under a 3-clause BSD license
 
+----
+
+.. _Euclid: http://www.cosmos.esa.int/web/euclid
+.. _Herschel: http://www.cosmos.esa.int/web/herschel/home
+.. _HST: https://www.spacetelescope.org/
 .. _license: https://git.ias.u-psud.fr/aboucaud/pypher/blob/packaging/LICENSE

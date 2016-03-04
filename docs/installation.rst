@@ -1,5 +1,6 @@
 .. _installation:
 
+============
 Installation
 ============
 
@@ -8,7 +9,7 @@ PyPHER works both with Python 2.7 and 3.3 or later
 .. _`pypi install`:
 
 Option 1: `Pip`_
------------------
+================
 
 .. code:: bash
 
@@ -17,7 +18,7 @@ Option 1: `Pip`_
 .. _`source install`:
 
 Option 2: from source_
-----------------------
+======================
 
 .. code:: bash
 
@@ -26,7 +27,7 @@ Option 2: from source_
     $ python setup.py install
 
 Dependencies
-------------
+============
 
 ``pypher`` needs the following Python libraries to be installed:
 
@@ -47,25 +48,3 @@ procedure, either install them manually or use the ``requirement.txt`` file prov
 .. _scipy: http://www.scipy.org/
 .. _pyfits: http://www.stsci.edu/institute/software_hardware/pyfits/
 .. _astropy: http://www.astropy.org/
-
-
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
