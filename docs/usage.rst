@@ -87,10 +87,13 @@ Because astronomical images may not be have been observed with the same orientat
 
 For this purpose, two optional parameters ``-s, --angle_source`` and ``-t, --angle_target`` can be provided to the code so it can rotate the PSFs before computing the kernel.
 
-These angles are defined in a clockwise order, as shown in the figure below.
+These angles are defined in a **clockwise** order, as shown in the figure below.
 
 .. _fig-angle:
 
-.. figure:: _static/angle_schema.jpg
+.. figure:: _static/angle_schema.png
      
-     Schematic of an image and its associated PSF with their direction of observation and the link to the angle.
+     Schematic of an image and its associated PSF with the reference direction of the telescope **+Z** and the angle definition.
+
+
+.. warning:: **+Z** is not to be mistaken with neither the position angle nor the scanning angle
