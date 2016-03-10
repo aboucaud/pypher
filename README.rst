@@ -2,7 +2,9 @@
 PyPHER - Python-based PSF Homogenization kERnels
 ====================================================
 
-|docs| |license|
+|pypi| |docs| |license|
+
+:Documentation: https://pypher.readthedocs.org/
 
 Compute an homogenization kernel between two PSFs.
 
@@ -69,6 +71,11 @@ please consider acknowledging the work by citing the following paper
 Boucaud, Bocchio *et al.* (2016) *in prep.*
 
 **Note:** To be submitted **soon**
+
+.. |pypi| image:: https://img.shields.io/pypi/v/pypher.svg
+    :alt: Latest Version
+    :scale: 100%
+    :target: https://pypi.python.org/pypi/pypher
 
 .. |docs| image:: https://readthedocs.org/projects/pypher/badge/?version=latest
     :alt: Documentation Status
