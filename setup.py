@@ -43,7 +43,7 @@ setup(
     maintainer_email='boucaud.alexandre@gmail.com',
     description='Python-based PSF Homogenization kERnels production',
     license='New BSD',
-    url='https://git.ias.u-psud.fr/aboucaud/pypher/',
+    url='http://pypher.readthedocs.org/en/latest/',
     download_url='https://git.ias.u-psud.fr/aboucaud/pypher/',
     version=find_version('pypher/pypher.py'),
     long_description=open('README.rst').read(),
