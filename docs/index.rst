@@ -65,10 +65,10 @@ Acknowledging
 If you make use of any product of this code in a scientific publication,
 please consider acknowledging the work by citing the following paper
 
-Boucaud, Bocchio *et al.* (2016) *in prep.*
+Boucaud *et al.* (2016) "Convolution kernels for multi-wavelength imaging"
 
 
-.. note:: To be submitted **soon**
+.. note:: submitted to *Astronomy & Astrophysics* journal
 
 ----
 

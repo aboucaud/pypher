@@ -68,9 +68,9 @@ Acknowledging
 If you make use of any product of this code in a scientific publication,
 please consider acknowledging the work by citing the following paper
 
-Boucaud, Bocchio *et al.* (2016) *in prep.*
+Boucaud *et al.* (2016) "Convolution kernels for multi-wavelength imaging"
 
-**Note:** To be submitted **soon**
+**Note:** *A&A submitted*
 
 .. |pypi| image:: https://img.shields.io/pypi/v/pypher.svg
     :alt: Latest Version
