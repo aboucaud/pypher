@@ -96,4 +96,4 @@ These angles are defined in a **clockwise** order, as shown in the figure below.
      Schematic of an image and its associated PSF with the reference direction of the telescope **+Z** and the angle definition.
 
 
-.. warning:: **+Z** is not to be mistaken with neither the position angle nor the scanning angle
+.. warning:: **+Z** is not to be mistaken with neither the rotation angle nor the scanning angle
