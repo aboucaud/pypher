@@ -2,7 +2,7 @@
 PyPHER - Python-based PSF Homogenization kERnels
 ====================================================
 
-|pypi| |docs| |license|
+|pypi| |docs| |license| |doi|
 
 :Documentation: https://pypher.readthedocs.org/
 
@@ -86,3 +86,8 @@ Boucaud *et al.* (2016) "Convolution kernels for multi-wavelength imaging"
     :alt: License type
     :scale: 100%
     :target: https://git.ias.u-psud.fr/aboucaud/pypher/blob/master/LICENSE
+
+.. |doi| image:: https://zenodo.org/badge/21241/aboucaud/pypher.svg
+    :alt: DOI number
+    :scale: 100%
+    :target: https://zenodo.org/badge/latestdoi/21241/aboucaud/pypher
