@@ -70,7 +70,7 @@ please consider acknowledging the work by citing the following paper
 
 Boucaud *et al.* (2016) "Convolution kernels for multi-wavelength imaging"
 
-**Note:** *A&A submitted*
+**Note:** *A&A accepted*, see `arXiv:1609.02006 <https://arxiv.org/abs/1609.02006>`_ 
 
 .. |pypi| image:: https://img.shields.io/pypi/v/pypher.svg
     :alt: Latest Version
