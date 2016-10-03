@@ -1,5 +1,6 @@
 include README.rst
 include LICENSE
+include CHANGELOG.md
 
 include docs/Makefile
 include docs/conf.py
