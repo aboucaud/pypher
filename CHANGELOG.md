@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Added
 - DOI badge of the v0.6.2 release to README
+- arXiv badge for the companion paper
 
 ## [0.6.2] - 2016-09-01
 ### Added

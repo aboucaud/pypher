@@ -4,14 +4,14 @@ PyPHER - Python-based PSF Homogenization kERnels
 
 |pypi| |docs| |license| |doi|
 
-:Documentation: https://pypher.readthedocs.org/
-
 Compute an homogenization kernel between two PSFs.
 
 This code is well suited for PSF matching applications in both an astronomical or microscopy context.
 
 It has been developed as part of the ESA `Euclid <http://www.cosmos.esa.int/web/euclid>`_ mission and is currently being used for multi-band photometric studies of `HST <https://www.spacetelescope.org/>`_ (visible) and `Herschel <http://www.cosmos.esa.int/web/herschel/home>`_ (IR) data.
 
+:Paper: http://arxiv.org/abs/1609.02006
+:Documentation: https://pypher.readthedocs.io
 
 Features
 ========
@@ -22,7 +22,7 @@ Features
 
 **Note:** ``pypher`` needs the pixel scale information to be present in the FITS files. If not, use the provided ``addpixscl`` method to add this missing info.
 
-**Warning:** This code **does not**    
+**Warning:** This code **does not**
 
     * interpolate NaN values (replaced by 0 instead),
     * center PSF images,
@@ -66,11 +66,9 @@ Acknowledging
 =============
 
 If you make use of any product of this code in a scientific publication,
-please consider acknowledging the work by citing the following paper
+please consider acknowledging the work by citing the paper |arxiv| as
+well as the code itself |doi|.
 
-Boucaud *et al.* (2016) "Convolution kernels for multi-wavelength imaging"
-
-**Note:** *A&A accepted*, see `arXiv:1609.02006 <https://arxiv.org/abs/1609.02006>`_ 
 
 .. |pypi| image:: https://img.shields.io/pypi/v/pypher.svg
     :alt: Latest Version
@@ -91,3 +89,8 @@ Boucaud *et al.* (2016) "Convolution kernels for multi-wavelength imaging"
     :alt: DOI number
     :scale: 100%
     :target: https://zenodo.org/badge/latestdoi/21241/aboucaud/pypher
+
+.. |arxiv| image:: http://img.shields.io/badge/arXiv-1609.02006-yellow.svg?style=flat
+     :alt: arXiv paper
+     :scale: 100%
+     :target: https://arxiv.org/abs/1609.02006
