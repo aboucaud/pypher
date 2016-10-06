@@ -32,7 +32,7 @@ Features
 Installation
 ============
 
-PyPHER works both with Python 2.7 and 3.3 or later and relies on `numpy <http://www.numpy.org/>`_, `scipy <http://www.scipy.org/>`_ and `pyfits <http://www.stsci.edu/institute/software_hardware/pyfits/>`_ (or `astropy <http://www.astropy.org/>`_) libraries.
+PyPHER works both with Python 2.7 and 3.3 or later and relies on `numpy <http://www.numpy.org/>`_, `scipy <http://www.scipy.org/>`_ and `astropy <http://www.astropy.org/>`_ libraries.
 
 Option 1: `Pip <https://pypi.python.org/pypi/pypher>`_
 ------------------------------------------------------

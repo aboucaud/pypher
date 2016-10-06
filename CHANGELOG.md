@@ -3,10 +3,16 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 
-## [Unreleased]
+## Unreleased
+
+## [0.6.3] - 2016-10-06
 ### Added
 - DOI badge of the v0.6.2 release to README
 - arXiv badge for the companion paper
+
+### Removed
+- Dependency on deprecated `pyfits` library for FITS I/O.
+Now defaults to `astropy.io.fits`
 
 ## [0.6.2] - 2016-09-01
 ### Added
@@ -96,7 +102,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Initial commit of the code.
 
 
-[Unreleased]: https://github.com/aboucaud/pypher/compare/v0.6.2...HEAD
+[Unreleased]: https://github.com/aboucaud/pypher/compare/v0.6.3...HEAD
+[0.6.3]: https://github.com/aboucaud/pypher/compare/v0.6.2...v0.6.3
 [0.6.2]: https://github.com/aboucaud/pypher/compare/v0.6.1...v0.6.2
 [0.6.1]: https://github.com/aboucaud/pypher/compare/v0.6...v0.6.1
 [0.6]: https://github.com/aboucaud/pypher/compare/v0.4...v0.6

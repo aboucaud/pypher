@@ -13,12 +13,9 @@ A set of convenience methods to deal with FITS files
 """
 from __future__ import absolute_import, print_function, division
 
-try:
-    import pyfits
-    from pyfits import getdata, writeto
-except ImportError:
-    import astropy.io.fits as pyfits
-    from astropy.io.fits import getdata, writeto
+import astropy.io.fits as pyfits
+from astropy.io.fits import getdata, writeto
+
 
 PIXSCL_KEY_DEG = ['CD1_1', 'CD2_2', 'CDELT1', 'CDELT2']
 PIXSCL_KEY_ARCSEC = ['PIXSCALE', 'SECPIX', 'PIXSCALX', 'PIXSCALY']

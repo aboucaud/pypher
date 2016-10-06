@@ -59,7 +59,7 @@ setup(
     install_requires=[
         'numpy>=1.7.2',
         'scipy>=0.9',
-        'pyfits>=3.2'
+        'astropy>=0.4'
     ],
     classifiers=[
         'Programming Language :: Python',
