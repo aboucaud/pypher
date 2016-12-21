@@ -42,7 +42,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def main():
+def main():  # pragma: no cover
     """Main script for addpixscl"""
     try:
         args = parse_args()

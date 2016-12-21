@@ -424,7 +424,7 @@ def homogenization_kernel(psf_target, psf_source, reg_fact=1e-4, clip=True):
 ########
 
 
-def setup_logger(log_filename='pypher.log'):
+def setup_logger(log_filename='pypher.log'):  # pragma: no cover
     """
     Set up and return a logger
 
@@ -458,7 +458,7 @@ def setup_logger(log_filename='pypher.log'):
 #######
 
 
-def main():
+def main():  # pragma: no cover
     """Main script for pypher"""
     try:
         args = parse_args()

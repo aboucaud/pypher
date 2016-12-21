@@ -1,0 +1,26 @@
+[run]
+omit = pypher/tests/*
+
+[report]
+# Regexes for lines to exclude from consideration
+exclude_lines =
+    # Have to re-enable the standard pragma
+    pragma: no cover
+    # Don't complain about packages we have installed
+    except ImportError
+    # Don't complain about missing debug-only code:
+    def __repr__
+    if self\.debug
+    # Don't complain if tests don't hit defensive assertion code:
+    raise AssertionError
+    raise NotImplementedError
+    # Don't complain if non-runnable code isn't run:
+    if 0:
+    if __name__ == .__main__.:
+    # Ignore branches that don't pertain to this version of Python
+    pragma: py{ignore_python_version}
+    six.PY{ignore_python_version}
+
+ignore_errors = True
+skip_covered = False
+show_missing = True
