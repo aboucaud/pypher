@@ -12,6 +12,7 @@ exclude Makefile
 exclude tox.ini
 exclude TODO
 exclude .pylintrc
+exclude .travis.yml
 
 global-exclude *.pyc
 global-exclude *.DS_Store
