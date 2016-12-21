@@ -162,7 +162,7 @@ def imresample(image, source_pscale, target_pscale, interp_order=1):
                           "Please resize the input PSF image.")
 
     # Chech for parity
-    if not (old_size - new_size) % 2:
+    if (old_size - new_size) % 2 == 1:
         new_size += 1
 
     ratio = new_size / old_size
