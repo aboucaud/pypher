@@ -2,7 +2,7 @@
 PyPHER - Python-based PSF Homogenization kERnels
 ====================================================
 
-|pypi| |docs| |license| |doi|
+|pypi| |docs| |license| |doi| |travis|
 
 Compute an homogenization kernel between two PSFs.
 
@@ -32,7 +32,7 @@ Features
 Installation
 ============
 
-PyPHER works both with Python 2.7 and 3.3 or later and relies on `numpy <http://www.numpy.org/>`_, `scipy <http://www.scipy.org/>`_ and `astropy <http://www.astropy.org/>`_ libraries.
+PyPHER works both with Python 2.7 and 3.4 or later and relies on `numpy <http://www.numpy.org/>`_, `scipy <http://www.scipy.org/>`_ and `astropy <http://www.astropy.org/>`_ libraries.
 
 Option 1: `Pip <https://pypi.python.org/pypi/pypher>`_
 ------------------------------------------------------
@@ -94,3 +94,8 @@ well as the code itself |doi|.
      :alt: arXiv paper
      :scale: 100%
      :target: https://arxiv.org/abs/1609.02006
+
+.. |travis| image:: https://travis-ci.org/aboucaud/pypher.svg?branch=master
+    :alt: Travis CI
+    :scale: 100%
+    :target: https://travis-ci.org/aboucaud/pypher
