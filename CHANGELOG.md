@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
 
+## [0.6.4] - 2016-12-22
+### Added
+- Unit tests and continuous integration with TravisCI.
+
+### Fixed
+- Issue with the parity of the image size when resampling images.
+
+### Removed
+- Support for Python 3.3
+
 ## [0.6.3] - 2016-10-06
 ### Added
 - DOI badge of the v0.6.2 release to README
@@ -102,7 +112,8 @@ Now defaults to `astropy.io.fits`
 - Initial commit of the code.
 
 
-[Unreleased]: https://github.com/aboucaud/pypher/compare/v0.6.3...HEAD
+[Unreleased]: https://github.com/aboucaud/pypher/compare/v0.6.4...HEAD
+[0.6.4]: https://github.com/aboucaud/pypher/compare/v0.6.3...v0.6.4
 [0.6.3]: https://github.com/aboucaud/pypher/compare/v0.6.2...v0.6.3
 [0.6.2]: https://github.com/aboucaud/pypher/compare/v0.6.1...v0.6.2
 [0.6.1]: https://github.com/aboucaud/pypher/compare/v0.6...v0.6.1
