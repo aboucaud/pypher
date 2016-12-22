@@ -4,7 +4,7 @@
 Installation
 ============
 
-PyPHER works both with Python 2.7 and 3.3 or later
+PyPHER works both with Python 2.7 and 3.4 or later
 
 .. _`pypi install`:
 
@@ -36,7 +36,7 @@ Dependencies
 * astropy_ (>=0.4)
 
 In case these are not automatically installed using the `pypi install`_
-procedure, either install them manually or use the ``requirement.txt`` file provided with the `source install`_ and simply:
+procedure, either install them manually or use the ``requirements.txt`` file provided with the `source install`_ and simply:
 
 .. code:: bash
 
