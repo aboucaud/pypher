@@ -38,3 +38,7 @@ install:
   - source ci-helpers/travis/setup_conda_$TRAVIS_OS_NAME.sh
 
 script: py.test
+
+addons:
+    code_climate:
+        repo_token: 3b872f454e56a7bae149bd9ec6b24c83e6d5856ce08035a8c2e739e67c410d70
