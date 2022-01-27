@@ -2,7 +2,7 @@
 PyPHER - Python-based PSF Homogenization kERnels
 ====================================================
 
-|pypi| |docs| |license| |doi| |travis|
+|pypi| |docs| |license| |doi| |actions|
 
 Compute an homogenization kernel between two PSFs.
 
@@ -95,7 +95,7 @@ well as the code itself |doi|.
      :scale: 100%
      :target: https://arxiv.org/abs/1609.02006
 
-.. |travis| image:: https://travis-ci.org/aboucaud/pypher.svg?branch=master
-    :alt: Travis CI
+.. |actions| image:: https://github.com/aboucaud/pypher/actions/workflows/pytest.yml/badge.svg
+    :alt: GitHub CI
     :scale: 100%
-    :target: https://travis-ci.org/aboucaud/pypher
+    :target: https://github.com/aboucaud/pypher/actions/workflows/pytest.yml
