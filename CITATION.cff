@@ -1,0 +1,36 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Boucaud"
+  given-names: "Alexandre"
+  orcid: "https://orcid.org/0000-0001-7387-2633"
+title: "PyPHER: PSF Homogenization kERnels"
+version: 0.6.2
+license: BSD-3-Clause
+doi: 10.5281/zenodo.61392
+date-released: 2016-09-02
+repository-code: "https://github.com/aboucaud/pypher"
+url: "https://pypher.readthedocs.io/"
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Boucaud"
+    given-names: "Alexandre"
+    orcid: "https://orcid.org/0000-0001-7387-2633"
+  - family-names: "Bocchio"
+    given-names: "Marco"
+  - family-names: "Abergel"
+    given-names: "Alain"
+  - family-names: "Orieux"
+    given-names: "François"
+  - family-names: "Dole"
+    given-names: "Hervé"
+  - family-names: "Hadj-Youcef"
+    given-names: "Amine"
+    orcid: "https://orcid.org/0000-0001-9313-5470"
+  doi: "10.1051/0004-6361/201629080"
+  journal: "Astronomy and Astrophysics"
+  start: "A63"
+  title: "Convolution kernels for multi-wavelength imaging"
+  volume: 596
+  year: 2016
