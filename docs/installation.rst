@@ -22,9 +22,16 @@ Option 2: from source_
 
 .. code:: bash
 
-    $ git clone https://git.ias.u-psud.fr/aboucaud/pypher.git
+    $ git clone https://github.com/aboucaud/pypher.git
     $ cd pypher
     $ python setup.py install
+
+Option 3: from `conda-forge <https://github.com/conda-forge/pypher-feedstock>`_
+===============================================================================
+
+.. code:: bash
+
+    $ conda install -c conda-forge pypher
 
 Dependencies
 ============
@@ -40,10 +47,10 @@ procedure, either install them manually or use the ``requirements.txt`` file pro
 
 .. code:: bash
 
-    $ pip install -r requirements.txt
+    pip install -r requirements.txt
 
 .. _Pip: https://pypi.python.org/pypi/pypher
-.. _source: https://git.ias.u-psud.fr/aboucaud/pypher/
+.. _source: https://github.com/aboucaud/pypher/
 .. _numpy: http://www.numpy.org/
 .. _scipy: http://www.scipy.org/
 .. _astropy: http://www.astropy.org/

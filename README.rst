@@ -32,24 +32,30 @@ Features
 Installation
 ============
 
-PyPHER works both with Python 2.7 and 3.4 or later and relies on `numpy <http://www.numpy.org/>`_, `scipy <http://www.scipy.org/>`_ and `astropy <http://www.astropy.org/>`_ libraries.
+PyPHER works both with Python 2.7 and 3.4 or above and relies on `numpy <http://www.numpy.org/>`_, `scipy <http://www.scipy.org/>`_ and `astropy <http://www.astropy.org/>`_ libraries.
 
 Option 1: `Pip <https://pypi.python.org/pypi/pypher>`_
 ------------------------------------------------------
 
 .. code:: bash
 
-    $ pip install pypher
+    pip install pypher
 
-Option 2: from `source <https://git.ias.u-psud.fr/aboucaud/pypher>`_
---------------------------------------------------------------------
+Option 2: from `source <https://github.com/aboucaud/pypher>`_
+-------------------------------------------------------------
 
 .. code:: bash
 
-    $ git clone https://git.ias.u-psud.fr/aboucaud/pypher.git
-    $ cd pypher
-    $ python setup.py install
+    git clone https://github.com/aboucaud/pypher
+    cd pypher
+    python setup.py install
 
+Option 3: from `conda-forge <https://github.com/conda-forge/pypher-feedstock>`_
+-------------------------------------------------------------------------------
+
+.. code:: bash
+
+    conda install -c conda-forge pypher
 
 Basic example
 =============
@@ -80,10 +86,15 @@ well as the code itself |doi|.
     :scale: 100%
     :target: https://pypher.readthedocs.org/en/latest/?badge=latest
 
+.. |actions| image:: https://github.com/aboucaud/pypher/actions/workflows/pytest.yml/badge.svg
+    :alt: GitHub CI
+    :scale: 100%
+    :target: https://github.com/aboucaud/pypher/actions/workflows/pytest.yml
+
 .. |license| image:: https://img.shields.io/badge/license-BSD-blue.svg?style=flat
     :alt: License type
     :scale: 100%
-    :target: https://git.ias.u-psud.fr/aboucaud/pypher/blob/master/LICENSE
+    :target: https://github.com/aboucaud/pypher/blob/master/LICENSE
 
 .. |doi| image:: https://zenodo.org/badge/21241/aboucaud/pypher.svg
     :alt: DOI number
@@ -95,7 +106,3 @@ well as the code itself |doi|.
      :scale: 100%
      :target: https://arxiv.org/abs/1609.02006
 
-.. |actions| image:: https://github.com/aboucaud/pypher/actions/workflows/pytest.yml/badge.svg
-    :alt: GitHub CI
-    :scale: 100%
-    :target: https://github.com/aboucaud/pypher/actions/workflows/pytest.yml

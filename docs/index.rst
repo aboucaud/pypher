@@ -65,10 +65,22 @@ Acknowledging
 If you make use of any product of this code in a scientific publication,
 please consider acknowledging the work by citing the following paper
 
-Boucaud *et al.* (2016) "Convolution kernels for multi-wavelength imaging"
+`Boucaud *et al.* (2016) "Convolution kernels for multi-wavelength imaging" <https://doi.org/10.1051/0004-6361/201629080>`_
 
 
-.. note:: submitted to *Astronomy & Astrophysics* journal
+.. code:: plain
+
+    @article{boucaud2016,
+        author = {{Boucaud, A.} and {Bocchio, M.} and {Abergel, A.} and {Orieux, F.} and {Dole, H.} and {Hadj-Youcef, M. A.}},
+        title = {Convolution kernels for multi-wavelength imaging},
+        DOI= "10.1051/0004-6361/201629080",
+        url= "https://doi.org/10.1051/0004-6361/201629080",
+        journal = {A\&A},
+        year = 2016,
+        volume = 596,
+        pages = "A63",
+    }
+
 
 ----
 
@@ -84,4 +96,4 @@ Boucaud *et al.* (2016) "Convolution kernels for multi-wavelength imaging"
 .. _Euclid: http://www.cosmos.esa.int/web/euclid
 .. _Herschel: http://www.cosmos.esa.int/web/herschel/home
 .. _HST: https://www.spacetelescope.org/
-.. _license: https://git.ias.u-psud.fr/aboucaud/pypher/blob/packaging/LICENSE
+.. _license: https://github.com/aboucaud/pypher/blob/packaging/LICENSE

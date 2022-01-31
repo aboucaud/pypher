@@ -9,4 +9,4 @@ feel free to fork the repository, make your own changes and send a pull
 request.
 
 
-.. _issue tracker: https://git.ias.u-psud.fr/aboucaud/pypher/issues
+.. _issue tracker: https://github.com/aboucaud/pypher/issues
