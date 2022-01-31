@@ -33,7 +33,7 @@ from scipy.ndimage import rotate, zoom
 from pypher import fitsutils as fits
 from pypher.parser import ThrowingArgumentParser, ArgumentParserError
 
-__version__ = '0.6.4'
+__version__ = '0.7.0'
 
 
 def parse_args():

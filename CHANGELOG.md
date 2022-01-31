@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
 
+
+## [0.7.0] - 2022-01-31
+
+### Added
+- Information on conda-forge availability
+- Citation file on GitHub and on the docs
+### Changed
+- Continuous integration switch from TravisCI to GitHub actions
+- All links now reference to the GitHub page for the project
+
+### Removed
+- Support for Python 2.7
+
 ## [0.6.4] - 2016-12-22
 ### Added
 - Unit tests and continuous integration with TravisCI.
