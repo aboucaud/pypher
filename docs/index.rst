@@ -84,4 +84,4 @@ Boucaud *et al.* (2016) "Convolution kernels for multi-wavelength imaging"
 .. _Euclid: http://www.cosmos.esa.int/web/euclid
 .. _Herschel: http://www.cosmos.esa.int/web/herschel/home
 .. _HST: https://www.spacetelescope.org/
-.. _license: https://git.ias.u-psud.fr/aboucaud/pypher/blob/packaging/LICENSE
+.. _license: https://github.com/aboucaud/pypher/blob/packaging/LICENSE

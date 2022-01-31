@@ -42,7 +42,7 @@ setup(
     description='Python-based PSF Homogenization kERnels production',
     license='New BSD',
     url='http://pypher.readthedocs.org/en/latest/',
-    download_url='https://git.ias.u-psud.fr/aboucaud/pypher/',
+    download_url='https://github.com/aboucaud/pypher',
     version=find_version('pypher/pypher.py'),
     long_description=open('README.rst').read(),
     zip_safe=False,
