@@ -30,8 +30,8 @@ import numpy as np
 
 from scipy.ndimage import rotate, zoom
 
-from . import fitsutils as fits
-from .parser import ThrowingArgumentParser, ArgumentParserError
+from pypher import fitsutils as fits
+from pypher.parser import ThrowingArgumentParser, ArgumentParserError
 
 __version__ = '0.6.4'
 
