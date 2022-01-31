@@ -72,8 +72,8 @@ Acknowledging
 =============
 
 If you make use of any product of this code in a scientific publication,
-please consider acknowledging the work by citing the paper using the bibtex 
-information that can be found in the `Cite this repository` section at the top right of the page.
+please consider acknowledging the work by citing the paper using the BibTeX 
+information in the ``Cite this repository`` section at the top right of the page.
 
 
 .. |pypi| image:: https://img.shields.io/pypi/v/pypher.svg
