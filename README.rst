@@ -62,7 +62,7 @@ Basic example
 
 .. code:: bash
 
-    pypher psf_a.fits psf_b.fits kernel_a_to_b.fits -r 1.e-5
+    $ pypher psf_a.fits psf_b.fits kernel_a_to_b.fits -r 1.e-5
 
 This will create the desired kernel ``kernel_a_to_b.fits`` and a short
 log ``kernel_a_to_b.log`` with information about the processing.

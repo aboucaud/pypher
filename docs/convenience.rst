@@ -9,8 +9,8 @@ Write the pixel scale in FITS file headers
 
 .. code:: bash
 
-    addpixscl fits_files pixel_scale [--ext EXT]
-    addpixscl (-h | --help)
+    $ addpixscl fits_files pixel_scale [--ext EXT]
+    $ addpixscl (-h | --help)
 
 Arguments
 ---------
@@ -36,10 +36,10 @@ This script works on single files
 
 .. code:: bash
     
-    addpixscl psf_a.fits 0.1
+    $ addpixscl psf_a.fits 0.1
 
 as well as on a list of files
 
 .. code:: bash
 
-    addpixscl psf*.fits 0.3 --ext 1
+    $ addpixscl psf*.fits 0.3 --ext 1

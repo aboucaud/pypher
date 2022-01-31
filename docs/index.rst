@@ -37,13 +37,13 @@ In most cases the code can be installed via
 
 .. code:: bash
 
-    pip install pypher
+    $ pip install pypher
 
 and a kernel can then be produced from two PSFs with a simple command line
 
 .. code:: bash
 
-    pypher psf_a.fits psf_b.fits kernel_a_to_b.fits
+    $ pypher psf_a.fits psf_b.fits kernel_a_to_b.fits
 
 Other installation procedures are described on the :ref:`installation page <installation>` and further command line options :ref:`here <usage>`.
 
@@ -65,10 +65,22 @@ Acknowledging
 If you make use of any product of this code in a scientific publication,
 please consider acknowledging the work by citing the following paper
 
-Boucaud *et al.* (2016) "Convolution kernels for multi-wavelength imaging"
+`Boucaud *et al.* (2016) "Convolution kernels for multi-wavelength imaging" <https://doi.org/10.1051/0004-6361/201629080>`_
 
 
-.. note:: submitted to *Astronomy & Astrophysics* journal
+.. code:: plain
+
+    @article{boucaud2016,
+        author = {{Boucaud, A.} and {Bocchio, M.} and {Abergel, A.} and {Orieux, F.} and {Dole, H.} and {Hadj-Youcef, M. A.}},
+        title = {Convolution kernels for multi-wavelength imaging},
+        DOI= "10.1051/0004-6361/201629080",
+        url= "https://doi.org/10.1051/0004-6361/201629080",
+        journal = {A\&A},
+        year = 2016,
+        volume = 596,
+        pages = "A63",
+    }
+
 
 ----
 
