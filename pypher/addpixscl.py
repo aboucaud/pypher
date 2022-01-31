@@ -21,8 +21,8 @@ from __future__ import absolute_import, print_function, division
 
 import sys
 
-from .parser import ThrowingArgumentParser, ArgumentParserError
-from .fitsutils import has_pixelscale, write_pixelscale
+from pypher.parser import ThrowingArgumentParser, ArgumentParserError
+from pypher.fitsutils import has_pixelscale, write_pixelscale
 
 
 def parse_args():
