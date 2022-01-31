@@ -38,9 +38,7 @@ def find_version(filepath):
 setup(
     name='pypher',
     author='Alexandre Boucaud',
-    author_email='alexandre.boucaud@ias.u-psud.fr',
-    maintainer='Alexandre Boucaud',
-    maintainer_email='boucaud.alexandre@gmail.com',
+    author_email='alexandre.boucaud@apc.in2p3.fr',
     description='Python-based PSF Homogenization kERnels production',
     license='New BSD',
     url='http://pypher.readthedocs.org/en/latest/',
