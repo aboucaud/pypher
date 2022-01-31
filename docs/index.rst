@@ -37,13 +37,13 @@ In most cases the code can be installed via
 
 .. code:: bash
 
-    $ pip install pypher
+    pip install pypher
 
 and a kernel can then be produced from two PSFs with a simple command line
 
 .. code:: bash
 
-    $ pypher psf_a.fits psf_b.fits kernel_a_to_b.fits
+    pypher psf_a.fits psf_b.fits kernel_a_to_b.fits
 
 Other installation procedures are described on the :ref:`installation page <installation>` and further command line options :ref:`here <usage>`.
 

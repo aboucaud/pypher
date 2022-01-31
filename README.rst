@@ -32,31 +32,37 @@ Features
 Installation
 ============
 
-PyPHER works both with Python 2.7 and 3.4 or later and relies on `numpy <http://www.numpy.org/>`_, `scipy <http://www.scipy.org/>`_ and `astropy <http://www.astropy.org/>`_ libraries.
+PyPHER works both with Python 2.7 and 3.4 or above and relies on `numpy <http://www.numpy.org/>`_, `scipy <http://www.scipy.org/>`_ and `astropy <http://www.astropy.org/>`_ libraries.
 
 Option 1: `Pip <https://pypi.python.org/pypi/pypher>`_
 ------------------------------------------------------
 
 .. code:: bash
 
-    $ pip install pypher
+    pip install pypher
 
 Option 2: from `source <https://github.com/aboucaud/pypher>`_
---------------------------------------------------------------------
+-------------------------------------------------------------
 
 .. code:: bash
 
-    $ git clone https://github.com/aboucaud/pypher
-    $ cd pypher
-    $ python setup.py install
+    git clone https://github.com/aboucaud/pypher
+    cd pypher
+    python setup.py install
 
+Option 3: from `conda-forge <https://github.com/conda-forge/pypher-feedstock>`_
+-------------------------------------------------------------------------------
+
+.. code:: bash
+
+    conda install -c conda-forge pypher
 
 Basic example
 =============
 
 .. code:: bash
 
-    $ pypher psf_a.fits psf_b.fits kernel_a_to_b.fits -r 1.e-5
+    pypher psf_a.fits psf_b.fits kernel_a_to_b.fits -r 1.e-5
 
 This will create the desired kernel ``kernel_a_to_b.fits`` and a short
 log ``kernel_a_to_b.log`` with information about the processing.
