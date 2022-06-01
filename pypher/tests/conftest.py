@@ -22,7 +22,7 @@ def create_mock_fits():
     # Single extension FITS
     img = fits.ImageHDU(data=x)
     singlehdu = fits.HDUList([prihdu, img])
-    singlehdu.writeto('image.fits', clobber=True)
+    singlehdu.writeto('image.fits', overwrite=True)
 
 
 @pytest.fixture(scope="module")
