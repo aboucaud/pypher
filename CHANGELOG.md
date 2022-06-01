@@ -4,8 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 ## Unreleased
+## [0.7.1] - 2022-06-01
 
-
+### Fixed
+- API change in astropy.io.fits
 ## [0.7.0] - 2022-01-31
 
 ### Added
