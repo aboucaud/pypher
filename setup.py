@@ -45,6 +45,7 @@ setup(
     download_url='https://github.com/aboucaud/pypher',
     version=find_version('pypher/pypher.py'),
     long_description=open('README.rst').read(),
+    long_description_content_type='text/x-rst',
     zip_safe=False,
     packages=find_packages(),
     include_package_data=True,
