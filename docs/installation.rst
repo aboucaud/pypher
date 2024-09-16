@@ -4,7 +4,7 @@
 Installation
 ============
 
-PyPHER works both with Python 2.7 and 3.4 or later
+PyPHER works both with Python 2.7 and 3.X
 
 .. _`pypi install`:
 

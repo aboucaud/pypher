@@ -87,7 +87,7 @@ please consider acknowledging the work by citing the following paper
 :Author:
     Alexandre Boucaud 
 :Email:
-    alexandre.boucaud [at] ias.u-psud.fr
+    alexandre.boucaud [at] apc.in2p3.fr
 :Licence:
     This work is licensed under a 3-clause BSD license
 

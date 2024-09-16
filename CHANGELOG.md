@@ -4,12 +4,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 ## Unreleased
-## [0.7.1] - 2022-06-01
 
+## [0.7.2] - 2024-09-17
+### Fixed
+- API change in numpy 2.X: np.alltrue replaced with np.all
+
+## [0.7.1] - 2022-06-01
 ### Fixed
 - API change in astropy.io.fits
+  
 ## [0.7.0] - 2022-01-31
-
 ### Added
 - Information on conda-forge availability
 - Citation file on GitHub and on the docs
