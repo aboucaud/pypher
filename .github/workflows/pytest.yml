@@ -12,8 +12,7 @@ jobs:
     strategy: 
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        # The first supported version on conda-forge and the latest available
-        python-version: ['3.6', '3.12']
+        python-version: ['3.8', '3.12']
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}"
