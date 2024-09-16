@@ -190,7 +190,7 @@ def trim(image, shape):
     shape = np.asarray(shape, dtype=int)
     imshape = np.asarray(image.shape, dtype=int)
 
-    if np.alltrue(imshape == shape):
+    if np.all(imshape == shape):
         return image
 
     if np.any(shape <= 0):
@@ -236,7 +236,7 @@ def zero_pad(image, shape, position='corner'):
     shape = np.asarray(shape, dtype=int)
     imshape = np.asarray(image.shape, dtype=int)
 
-    if np.alltrue(imshape == shape):
+    if np.all(imshape == shape):
         return image
 
     if np.any(shape <= 0):
