@@ -149,6 +149,9 @@ class TestFourier(object):
         shape = imagedirac.shape
         assert_equal(psf2otf(imagedirac, shape), np.ones(shape))
 
+    def test_diract_2d_vs_nd(self, imagedirac):
+        assert_equal(np.fft.fft2(imagedirac), np.fft.fftn(imagedirac))
+
     def test_homogenization_dtype(self, imagedirac):
         center = imagedirac.shape[0] // 2
         target = np.zeros_like(imagedirac)

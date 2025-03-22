@@ -33,7 +33,7 @@ from scipy.ndimage import rotate, zoom
 from pypher import fitsutils as fits
 from pypher.parser import ThrowingArgumentParser, ArgumentParserError
 
-__version__ = '0.7.2'
+__version__ = '0.7.3'
 
 
 def parse_args():
@@ -310,6 +310,7 @@ def psf2otf(psf, shape):
     Notes
     -----
     Adapted from MATLAB psf2otf function
+    Arrays of higher dimension that 2D are also supported
 
     """
     if np.all(psf == 0):
@@ -325,7 +326,7 @@ def psf2otf(psf, shape):
         psf = np.roll(psf, -int(axis_size / 2), axis=axis)
 
     # Compute the OTF
-    otf = np.fft.fft2(psf)
+    otf = np.fft.fftn(psf)
 
     # Estimate the rough number of operations involved in the FFT
     # and discard the PSF imaginary part if within roundoff error
