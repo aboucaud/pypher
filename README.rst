@@ -78,31 +78,24 @@ information in the ``Cite this repository`` section at the top right of the page
 
 .. |pypi| image:: https://img.shields.io/pypi/v/pypher.svg
     :alt: Latest Version
-    :scale: 100%
     :target: https://pypi.python.org/pypi/pypher
 
 .. |docs| image:: https://readthedocs.org/projects/pypher/badge/?version=latest
     :alt: Documentation Status
-    :scale: 100%
     :target: https://pypher.readthedocs.org/en/latest/?badge=latest
 
 .. |actions| image:: https://github.com/aboucaud/pypher/actions/workflows/pytest.yml/badge.svg
     :alt: GitHub CI
-    :scale: 100%
     :target: https://github.com/aboucaud/pypher/actions/workflows/pytest.yml
 
 .. |license| image:: https://img.shields.io/badge/license-BSD-blue.svg?style=flat
     :alt: License type
-    :scale: 100%
     :target: https://github.com/aboucaud/pypher/blob/master/LICENSE
 
 .. |doi| image:: https://zenodo.org/badge/21241/aboucaud/pypher.svg
     :alt: DOI number
-    :scale: 100%
     :target: https://zenodo.org/badge/latestdoi/21241/aboucaud/pypher
 
 .. |arxiv| image:: http://img.shields.io/badge/arXiv-1609.02006-yellow.svg?style=flat
      :alt: arXiv paper
-     :scale: 100%
      :target: https://arxiv.org/abs/1609.02006
-
